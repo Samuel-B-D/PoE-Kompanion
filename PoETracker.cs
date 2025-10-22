@@ -1,4 +1,4 @@
-namespace PoELogoutMacro;
+namespace PoEKompanion;
 
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,9 +66,8 @@ internal sealed class PoETracker
         if (this.poeProcess is null) return;
 
         var pid = this.poeProcess.Id;
-        var inodes = GetInodesForPid(pid);
+        var inodes = await GetInodesForPid(pid);
 
-        // this.openedPoEConnections.Clear();
         var newOpenedConnections = new List<OpenedPoEConnection>();
         await foreach (var openedConn in FindGameOpenedConnections($"/proc/{pid}/net/tcp", inodes, "TCP"))
         {
@@ -147,7 +146,7 @@ internal sealed class PoETracker
         }
     }
 
-    static HashSet<string> GetInodesForPid(int pid)
+    static async Task<HashSet<string>> GetInodesForPid(int pid)
     {
         var inodes = new HashSet<string>();
         var inodesLock = new Lock();
@@ -163,7 +162,7 @@ internal sealed class PoETracker
         {
             var files = Directory.GetFiles(fdPath);
 
-            Parallel.ForEach(files, file =>
+            await Parallel.ForEachAsync(files, async (file, ct) =>
             {
                 try
                 {
@@ -179,8 +178,8 @@ internal sealed class PoETracker
                         }
                     };
                     proc.Start();
-                    var link = proc.StandardOutput.ReadToEnd().Trim();
-                    proc.WaitForExit();
+                    var link = (await proc.StandardOutput.ReadToEndAsync(ct)).Trim();
+                    await proc.WaitForExitAsync(ct);
 
                     if (link.StartsWith("socket:[") && link.EndsWith(']'))
                     {
@@ -238,7 +237,6 @@ internal sealed class PoETracker
             // Only show connections to non-localhost addresses
             if (!remoteAddr.StartsWith("127.") && remoteAddr != "0.0.0.0")
             {
-                // Console.WriteLine($"PoE Opened connection ({protocol}): {localAddr}:{localPort} -> {remoteAddr}:{remotePort}");
                 yield return new OpenedPoEConnection(protocol, localAddr, localPort, remoteAddr, remotePort);
             }
         }
@@ -260,7 +258,7 @@ internal sealed class PoETracker
     {
         public override string ToString()
         {
-            return $"PoE Opened connection ({Protocol}): {LocalAddr}:{LocalPort} -> {RemoteAddr}:{RemotePort}";
+            return $"PoE Opened connection ({this.Protocol}): {this.LocalAddr}:{this.LocalPort} -> {this.RemoteAddr}:{this.RemotePort}";
         }
     }
 }

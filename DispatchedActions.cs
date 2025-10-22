@@ -1,4 +1,4 @@
-namespace PoELogoutMacro;
+namespace PoEKompanion;
 
 public enum DispatchedActions
 {

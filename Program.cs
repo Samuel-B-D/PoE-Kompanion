@@ -1,8 +1,11 @@
-﻿namespace PoELogoutMacro;
+﻿namespace PoEKompanion;
 
 using System.Threading.Tasks;
 
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using Avalonia;
 
 internal static class Program
@@ -13,6 +16,17 @@ internal static class Program
     [STAThread]
     public static async Task Main(string[] args)
     {
+        string path = Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.FriendlyName));
+        var currentProcess = Process.GetCurrentProcess();
+        foreach (var process in Process.GetProcesses().Where(p => !p.Equals(currentProcess) && p.MainModule?.FileName == path))
+        {
+            Console.WriteLine("Killing previous orphaned process");
+            try
+            {
+                process.Kill(true);
+            } catch (Exception) { /* nom */ }
+        }
+        
         if (args.Length > 0 && args[0] == "--bg")
         {
             await PoETracker.Instance.RunAsync();

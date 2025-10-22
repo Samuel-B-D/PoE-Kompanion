@@ -1,4 +1,4 @@
-namespace PoELogoutMacro;
+namespace PoEKompanion;
 
 using System;
 using System.Diagnostics;
@@ -81,7 +81,12 @@ public class App : Application
 
     private void ExitAction(object? sender, EventArgs e)
     {
-        this.bgProcess?.Close();
+        try
+        {
+            this.bgProcess?.Kill(true);
+            this.bgProcess?.Close();
+        } catch (Exception) { /* nom */ }
+
         Environment.Exit(0);
     }
 }
