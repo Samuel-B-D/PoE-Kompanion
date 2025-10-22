@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿namespace PoELogoutMacro;
 
-namespace PoELogoutMacro;
+using System.Threading.Tasks;
 
 using System;
-
 using Avalonia;
 
 internal static class Program
@@ -46,6 +45,5 @@ internal static class Program
             .With(new SkiaOptions
             {
                 UseOpacitySaveLayer = false,
-            })            
-        ;
+            });
 }

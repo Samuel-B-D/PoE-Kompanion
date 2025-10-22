@@ -1,7 +1,7 @@
+namespace PoELogoutMacro;
+
 using System.Threading;
 using System.Threading.Tasks;
-
-namespace PoELogoutMacro;
 
 using System;
 using System.Collections.Generic;
@@ -53,6 +53,11 @@ internal sealed class PoETracker
 
         if (proc == null) return;
 
+        if (this.poeProcess?.Id != proc.Id)
+        {
+            Console.WriteLine($"PoE Process ID: {proc.Id}");
+        }
+
         this.poeProcess = proc;
     }
 
@@ -63,12 +68,36 @@ internal sealed class PoETracker
         var pid = this.poeProcess.Id;
         var inodes = GetInodesForPid(pid);
 
-        this.openedPoEConnections.Clear();
+        // this.openedPoEConnections.Clear();
+        var newOpenedConnections = new List<OpenedPoEConnection>();
         await foreach (var openedConn in FindGameOpenedConnections($"/proc/{pid}/net/tcp", inodes, "TCP"))
         {
-            this.openedPoEConnections.Add(openedConn);
+            newOpenedConnections.Add(openedConn);
         }
-        // this.openedPoEConnections.AddRange(FindGameOpenedConnections($"/proc/{pid}/net/tcp", inodes, "TCP"));
+
+        foreach (var openedConn in newOpenedConnections)
+        {
+            if (!this.openedPoEConnections.Contains(openedConn))
+            {
+                Console.WriteLine($"New PoE Connection: {openedConn}");
+                this.openedPoEConnections.Add(openedConn);
+            }
+        }
+
+        var connsToRemove = new List<OpenedPoEConnection>();
+        foreach (var existingConn in this.openedPoEConnections)
+        {
+            if (!newOpenedConnections.Contains(existingConn))
+            {
+                Console.WriteLine($"PoE Connection gone: {existingConn}");
+                connsToRemove.Add(existingConn);
+            }
+        }
+
+        foreach (var connToRemove in connsToRemove)
+        {
+            this.openedPoEConnections.Remove(connToRemove);
+        }
     }
 
     async Task CloseGameConnections()
@@ -85,6 +114,9 @@ internal sealed class PoETracker
         {
             SendRstPacket(connection);
         }
+        
+        Console.WriteLine("Killed All PoE Connections");
+        this.openedPoEConnections.Clear();
     }
 
     static void SendRstPacket(OpenedPoEConnection openedPoEConnection)
@@ -206,8 +238,8 @@ internal sealed class PoETracker
             // Only show connections to non-localhost addresses
             if (!remoteAddr.StartsWith("127.") && remoteAddr != "0.0.0.0")
             {
-                Console.WriteLine($"PoE Opened connection ({protocol}): {localAddr}:{localPort} -> {remoteAddr}:{remotePort}");
-                yield return new OpenedPoEConnection(localAddr, localPort, remoteAddr, remotePort);
+                // Console.WriteLine($"PoE Opened connection ({protocol}): {localAddr}:{localPort} -> {remoteAddr}:{remotePort}");
+                yield return new OpenedPoEConnection(protocol, localAddr, localPort, remoteAddr, remotePort);
             }
         }
     }
@@ -224,5 +256,11 @@ internal sealed class PoETracker
     }
 
     // ReSharper disable NotAccessedPositionalProperty.Local
-    private sealed record OpenedPoEConnection(string? LocalAddr, int? LocalPort, string RemoteAddr, int RemotePort);
+    private sealed record OpenedPoEConnection(string Protocol, string? LocalAddr, int? LocalPort, string RemoteAddr, int RemotePort)
+    {
+        public override string ToString()
+        {
+            return $"PoE Opened connection ({Protocol}): {LocalAddr}:{LocalPort} -> {RemoteAddr}:{RemotePort}";
+        }
+    }
 }

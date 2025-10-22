@@ -1,3 +1,5 @@
+namespace PoELogoutMacro;
+
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -5,8 +7,6 @@ using System.Threading.Tasks;
 using Avalonia.Controls.ApplicationLifetimes;
 using SharpHook;
 using SharpHook.Data;
-
-namespace PoELogoutMacro;
 
 using Avalonia;
 using Avalonia.Markup.Xaml;
@@ -29,7 +29,6 @@ public class App : Application
         if (this.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             string path = Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.FriendlyName));
-            Console.WriteLine("PATH: " + path);
 
             var args = desktop.Args;
             for (var i = 0; i < args?.Length; ++i)
