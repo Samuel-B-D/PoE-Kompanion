@@ -1,0 +1,77 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <SelfContained>true</SelfContained>
+        <PublishAot>true</PublishAot>
+        <PublishTrimmed>true</PublishTrimmed>
+        <IlcOptimizationPreference>Speed</IlcOptimizationPreference>
+        <OptimizationPreference>Speed</OptimizationPreference>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+
+        <UseFastDeployment>false</UseFastDeployment>
+        <RunAOTCompilation>true</RunAOTCompilation>
+        <InvariantGlobalization>true</InvariantGlobalization>
+
+        <IlcGenerateMstatFile>true</IlcGenerateMstatFile>
+        <StripSymbols>false</StripSymbols>
+
+<!--        <StripSymbols>true</StripSymbols>-->
+        
+        <TrimMode>link</TrimMode>
+        <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
+        <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+
+        <TrimmerRootDescriptorFiles>linker.rd.xml</TrimmerRootDescriptorFiles>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+        <OutputType>WinExe</OutputType>
+        <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+        <OutputType>Exe</OutputType>
+        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- Both of these settings increase the baseline memory usage,
+             but gives a better overall memory footprint during the runtime
+             of the application.
+        -->
+        <ServerGarbageCollection>true</ServerGarbageCollection>
+        <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+        
+        <ThreadPoolMinThreads>4</ThreadPoolMinThreads>
+        <ThreadPoolMaxThreads>64</ThreadPoolMaxThreads>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <RuntimeHostConfigurationOption Include="System.Net.DisableIPv6" Value="true" />
+        <RuntimeHostConfigurationOption Include="System.GC.LatencyLevel" Value="1" />
+        <RuntimeHostConfigurationOption Include="System.GC.HeapHardLimit" Value="20971520" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.3.7"/>
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.7"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.7"/>
+
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.7">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="MainWindow.axaml.cs">
+        <DependentUpon>MainWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+</Project>
