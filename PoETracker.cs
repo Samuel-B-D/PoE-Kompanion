@@ -17,7 +17,7 @@ internal sealed class PoETracker
     
     public PoETracker()
     {
-        SudoCheck();
+        // SudoCheck();
             
         this.FindPoEExecutable();
         this.FindGameConnections();

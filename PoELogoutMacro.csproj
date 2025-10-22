@@ -57,6 +57,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <AvaloniaResource Include="Assets/**/*.ico" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.3.7"/>
         <PackageReference Include="Avalonia.Desktop" Version="11.3.7"/>
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.7"/>
@@ -68,10 +72,4 @@
         </PackageReference>
     </ItemGroup>
 
-    <ItemGroup>
-      <Compile Update="MainWindow.axaml.cs">
-        <DependentUpon>MainWindow.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-    </ItemGroup>
 </Project>

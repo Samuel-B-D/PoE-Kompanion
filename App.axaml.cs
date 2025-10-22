@@ -3,7 +3,6 @@ using System;
 namespace PoELogoutMacro;
 
 using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
 public class App : Application
@@ -13,14 +12,8 @@ public class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    private void ExitAction(object? sender, EventArgs e)
     {
-        
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            desktop.MainWindow = new MainWindow();
-        }
-        
-        base.OnFrameworkInitializationCompleted();
+        Environment.Exit(0);
     }
 }

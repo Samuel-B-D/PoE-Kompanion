@@ -4,7 +4,20 @@
    x:Class="PoELogoutMacro.App"
    RequestedThemeVariant="Default"
 >
-   <Application.Styles>
-      <FluentTheme />
-   </Application.Styles>
+   <!-- <Application.Styles> -->
+   <!--    <FluentTheme /> -->
+   <!-- </Application.Styles> -->
+   
+   <TrayIcon.Icons>
+      <TrayIcons>
+         <TrayIcon Icon="/Assets/poe-kompanion.ico" 
+                   ToolTipText="PoE Kompanion">
+            <TrayIcon.Menu>
+               <NativeMenu>
+                  <NativeMenuItem Header="Exit" Click="ExitAction" />
+               </NativeMenu>
+            </TrayIcon.Menu>
+         </TrayIcon>
+      </TrayIcons>
+   </TrayIcon.Icons>
 </Application>
