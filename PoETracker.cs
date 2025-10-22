@@ -1,7 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using SharpHook;
-using SharpHook.Data;
 
 namespace PoELogoutMacro;
 
@@ -13,54 +11,52 @@ using System.Linq;
 
 internal sealed class PoETracker
 {
-    public static PoETracker? Instance;
+    public static readonly PoETracker Instance = new();
 
+    // ReSharper disable once NotAccessedField.Local
     private readonly Timer hookTimer;
 
-    public static void Initialize()
-    {
-        _ = Instance = new();
-    }
-
-    public static void InitializeBlocking()
-    {
-        _ = Instance = new(true);
-    }
-
     private Process? poeProcess;
-    private List<OpenedPoEConnection> openedPoEConnections = [];
+    private readonly List<OpenedPoEConnection> openedPoEConnections = [];
 
-    public PoETracker(bool block = false)
+    private PoETracker()
     {
         this.hookTimer = new Timer(_ =>
         {
-            this.FindPoEExecutable();
-            this.FindGameConnections();
+            Task.Run(async () =>
+            {
+                this.FindPoEExecutable();
+                await this.FindGameConnections();
+            });
         }, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+    }
 
+    public async Task RunAsync()
+    {
         while (true)
         {
             var c = (char)Console.Read();
             Console.WriteLine(c);
-            ((DispatchedActions)c switch
+            await ((DispatchedActions)c switch
             {
-                DispatchedActions.ForceLogout => (Action)this.CloseGameConnections,
-                _ => delegate { }
-            })();
+                DispatchedActions.ForceLogout => this.CloseGameConnections(),
+                _ => Task.CompletedTask,
+            });
         }
+        // ReSharper disable once FunctionNeverReturns
     }
 
     private void FindPoEExecutable()
     {
         // Filter for process with PathOfExileSteam in command line
-        var poeProcess = Process.GetProcesses().FirstOrDefault(p => p.ProcessName.StartsWith("PathOfExileSte"));
+        var proc = Process.GetProcesses().FirstOrDefault(p => p.ProcessName.StartsWith("PathOfExileSte"));
 
-        if (poeProcess == null) return;
+        if (proc == null) return;
 
-        this.poeProcess = poeProcess;
+        this.poeProcess = proc;
     }
 
-    void FindGameConnections()
+    async Task FindGameConnections()
     {
         if (this.poeProcess is null) return;
 
@@ -68,10 +64,14 @@ internal sealed class PoETracker
         var inodes = GetInodesForPid(pid);
 
         this.openedPoEConnections.Clear();
-        this.openedPoEConnections.AddRange(FindGameOpenedConnections($"/proc/{pid}/net/tcp", inodes, "TCP"));
+        await foreach (var openedConn in FindGameOpenedConnections($"/proc/{pid}/net/tcp", inodes, "TCP"))
+        {
+            this.openedPoEConnections.Add(openedConn);
+        }
+        // this.openedPoEConnections.AddRange(FindGameOpenedConnections($"/proc/{pid}/net/tcp", inodes, "TCP"));
     }
 
-    void CloseGameConnections()
+    async Task CloseGameConnections()
     {
         foreach (var connection in this.openedPoEConnections)
         {
@@ -79,7 +79,7 @@ internal sealed class PoETracker
         }
 
         this.FindPoEExecutable();
-        this.FindGameConnections();
+        await this.FindGameConnections();
         
         foreach (var connection in this.openedPoEConnections)
         {
@@ -97,7 +97,7 @@ internal sealed class PoETracker
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "bash",
-                    Arguments = $"-c \"sudo ss -K dst {openedPoEConnection.remoteAddr} dport {openedPoEConnection.remotePort}\"",
+                    Arguments = $"-c \"sudo ss -K dst {openedPoEConnection.RemoteAddr} dport {openedPoEConnection.RemotePort}\"",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -107,7 +107,7 @@ internal sealed class PoETracker
             proc.Start();
             proc.WaitForExit();
 
-            Console.WriteLine($"Closed connection to {openedPoEConnection.remoteAddr}:{openedPoEConnection.remotePort}");
+            Console.WriteLine($"Closed connection to {openedPoEConnection.RemoteAddr}:{openedPoEConnection.RemotePort}");
         }
         catch (Exception ex)
         {
@@ -118,6 +118,7 @@ internal sealed class PoETracker
     static HashSet<string> GetInodesForPid(int pid)
     {
         var inodes = new HashSet<string>();
+        var inodesLock = new Lock();
         var fdPath = $"/proc/{pid}/fd";
 
         if (!Directory.Exists(fdPath))
@@ -130,7 +131,7 @@ internal sealed class PoETracker
         {
             var files = Directory.GetFiles(fdPath);
 
-            foreach (var file in files)
+            Parallel.ForEach(files, file =>
             {
                 try
                 {
@@ -152,13 +153,13 @@ internal sealed class PoETracker
                     if (link.StartsWith("socket:[") && link.EndsWith(']'))
                     {
                         var inode = link.Substring(8, link.Length - 9);
+                        inodesLock.Enter();
                         inodes.Add(inode);
+                        inodesLock.Exit();
                     }
                 }
-                catch
-                {
-                }
-            }
+                catch (Exception) { /* nom */ }
+            });
         }
         catch (Exception ex)
         {
@@ -168,8 +169,7 @@ internal sealed class PoETracker
         return inodes;
     }
 
-    static IEnumerable<OpenedPoEConnection> FindGameOpenedConnections(string path, HashSet<string> inodes,
-        string protocol)
+    static async IAsyncEnumerable<OpenedPoEConnection> FindGameOpenedConnections(string path, HashSet<string> inodes, string protocol)
     {
         if (!File.Exists(path))
         {
@@ -177,40 +177,36 @@ internal sealed class PoETracker
             yield break;
         }
 
-        string[] lines;
-        try
+        bool first = true;
+        await foreach (var line in File.ReadLinesAsync(path))
         {
-            lines = File.ReadAllLines(path);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error reading {path}: {ex.Message}");
-            yield break;
-        }
-
-        foreach (var line in lines.Skip(1))
-        {
+            if (first)
+            {
+                first = false;
+                continue;
+            }
+            
             var parts = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);
 
-            if (parts.Length < 10)
-                continue;
+            if (parts.Length < 10) continue;
 
             var state = parts[3];
             var inode = parts[9];
 
             // Only show ESTABLISHED connections with matching inodes
-            if (state != "01" || !inodes.Contains(inode))
-                continue;
+            if (state != "01" || !inodes.Contains(inode)) continue;
 
-            var localAddr = HexToIp(parts[1].Split(':')[0]);
-            var localPort = int.Parse(parts[1].Split(':')[1], System.Globalization.NumberStyles.HexNumber);
+            // var localAddr = HexToIp(parts[1].Split(':')[0]);
+            // var localPort = int.Parse(parts[1].Split(':')[1], System.Globalization.NumberStyles.HexNumber);
+            string? localAddr = null;
+            int? localPort = null;
             var remoteAddr = HexToIp(parts[2].Split(':')[0]);
             var remotePort = int.Parse(parts[2].Split(':')[1], System.Globalization.NumberStyles.HexNumber);
 
             // Only show connections to non-localhost addresses
             if (!remoteAddr.StartsWith("127.") && remoteAddr != "0.0.0.0")
             {
-                Console.WriteLine($"{protocol}: {localAddr}:{localPort} -> {remoteAddr}:{remotePort}");
+                Console.WriteLine($"PoE Opened connection ({protocol}): {localAddr}:{localPort} -> {remoteAddr}:{remotePort}");
                 yield return new OpenedPoEConnection(localAddr, localPort, remoteAddr, remotePort);
             }
         }
@@ -221,12 +217,12 @@ internal sealed class PoETracker
         var bytes = new byte[4];
         for (var i = 0; i < 4; ++i)
         {
-            bytes[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
+            bytes[3 - i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
         }
 
-        Array.Reverse(bytes);
         return string.Join(".", bytes);
     }
 
-    private sealed record OpenedPoEConnection(string localAddr, int localPort, string remoteAddr, int remotePort);
+    // ReSharper disable NotAccessedPositionalProperty.Local
+    private sealed record OpenedPoEConnection(string? LocalAddr, int? LocalPort, string RemoteAddr, int RemotePort);
 }

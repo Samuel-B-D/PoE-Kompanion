@@ -15,7 +15,7 @@ public class App : Application
 {
     private const KeyCode HOTKEY = KeyCode.VcBackQuote;
     
-    private Process? bgProcess = null;
+    private Process? bgProcess;
     
     private readonly EventLoopGlobalHook hook = new();
     
@@ -26,7 +26,7 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        if (this.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             string path = Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.FriendlyName));
             Console.WriteLine("PATH: " + path);
@@ -40,7 +40,7 @@ public class App : Application
                 }
             }
 
-            StartBackgroundProcess(path);
+            this.StartBackgroundProcess(path);
             this.InitHook();
         }
 
@@ -49,7 +49,7 @@ public class App : Application
     
     private void InitHook()
     {
-        hook.KeyPressed += (sender, args) =>
+        this.hook.KeyPressed += (_, args) =>
         {
             if (args.Data.KeyCode == HOTKEY)
             {
@@ -58,7 +58,7 @@ public class App : Application
                 this.bgProcess.StandardInput.Flush();
             }
         };
-        Task.Run(() => hook.RunAsync());
+        Task.Run(() => this.hook.RunAsync());
     }
 
     private void StartBackgroundProcess(string path)

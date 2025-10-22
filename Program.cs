@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Runtime.CompilerServices;
+﻿using System.Threading.Tasks;
 
 namespace PoELogoutMacro;
 
@@ -13,11 +12,11 @@ internal static class Program
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         if (args.Length > 0 && args[0] == "--bg")
         {
-            PoETracker.InitializeBlocking();
+            await PoETracker.Instance.RunAsync();
         }
         else
         {
