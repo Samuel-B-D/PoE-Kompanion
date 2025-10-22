@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace PoELogoutMacro;
 
@@ -14,8 +15,14 @@ internal static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        PoETracker.Initialize();
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        if (args.Length > 0 && args[0] == "--bg")
+        {
+            PoETracker.InitializeBlocking();
+        }
+        else
+        {
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
