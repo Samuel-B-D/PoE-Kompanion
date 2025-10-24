@@ -6,7 +6,7 @@
 >
    <TrayIcon.Icons>
       <TrayIcons>
-         <TrayIcon Icon="/Assets/poek.ico" 
+         <TrayIcon Icon="/Assets/poe-kompanion.ico" 
                    ToolTipText="PoE Kompanion">
             <TrayIcon.Menu>
                <NativeMenu>

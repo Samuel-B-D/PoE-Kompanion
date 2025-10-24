@@ -4,27 +4,27 @@
         <Nullable>enable</Nullable>
 
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <SelfContained>true</SelfContained>
         <PublishAot>true</PublishAot>
         <PublishTrimmed>true</PublishTrimmed>
         <IlcOptimizationPreference>Speed</IlcOptimizationPreference>
         <OptimizationPreference>Speed</OptimizationPreference>
-        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
-
         <UseFastDeployment>false</UseFastDeployment>
         <RunAOTCompilation>true</RunAOTCompilation>
         <InvariantGlobalization>true</InvariantGlobalization>
-
         <IlcGenerateMstatFile>true</IlcGenerateMstatFile>
         <StripSymbols>false</StripSymbols>
 
 <!--        <StripSymbols>true</StripSymbols>-->
-        
+
         <TrimMode>link</TrimMode>
         <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
         <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
-
         <TrimmerRootDescriptorFiles>linker.rd.xml</TrimmerRootDescriptorFiles>
     </PropertyGroup>
 

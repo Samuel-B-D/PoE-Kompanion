@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="App.axaml" value="PoEKompanion.csproj" />
+        <entry key="Controls/HotkeyPickerButton.axaml" value="PoEKompanion.csproj" />
+      </map>
+    </option>
+  </component>
+</project>
