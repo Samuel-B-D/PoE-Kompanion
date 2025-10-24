@@ -7,7 +7,7 @@
    <Application.Resources>
       <ResourceDictionary>
          <ResourceDictionary.MergedDictionaries>
-            <MergeResourceInclude Source="Themes/_Index.axaml" />
+            <MergeResourceInclude Source="ControlThemes/_Index.axaml" />
          </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
    </Application.Resources>
