@@ -28,11 +28,10 @@ public class App : Application
     {
         if (this.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Load configuration
-            var config = ConfigurationManager.Load();
+            var config = ConfigurationManager.LoadAsync().GetAwaiter().GetResult();
             this.currentHotkey = config.LogoutHotkey;
 
-            string path = Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.FriendlyName));
+            var path = Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.FriendlyName));
 
             var args = desktop.Args;
             for (var i = 0; i < args?.Length; ++i)
@@ -54,12 +53,11 @@ public class App : Application
     {
         this.hook.KeyPressed += (_, args) =>
         {
-            if (args.Data.KeyCode == this.currentHotkey)
-            {
-                if (this.bgProcess is null) return;
-                this.bgProcess.StandardInput.Write((char)DispatchedActions.ForceLogout);
-                this.bgProcess.StandardInput.Flush();
-            }
+            if (args.Data.KeyCode != this.currentHotkey) return;
+            if (this.bgProcess is null) return;
+
+            this.bgProcess.StandardInput.Write((char)DispatchedActions.ForceLogout);
+            this.bgProcess.StandardInput.Flush();
         };
         Task.Run(() => this.hook.RunAsync());
     }
