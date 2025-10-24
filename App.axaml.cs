@@ -123,6 +123,8 @@ public class App : Application
 
     private void StartBackgroundProcess(string path)
     {
+        var currentPid = Process.GetCurrentProcess().Id;
+
         try
         {
             this.bgProcess = new Process
@@ -130,7 +132,7 @@ public class App : Application
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "sudo",
-                    Arguments = $"-n {path} --bg",
+                    Arguments = $"-n {path} --bg {currentPid}",
                     UseShellExecute = false,
                     CreateNoWindow = true,
                 },
@@ -152,7 +154,7 @@ public class App : Application
                             StartInfo = new ProcessStartInfo
                             {
                                 FileName = "pkexec",
-                                Arguments = $"sudo {path} --bg",
+                                Arguments = $"sudo {path} --bg {currentPid}",
                                 UseShellExecute = false,
                                 CreateNoWindow = true,
                             },
@@ -193,7 +195,7 @@ public class App : Application
                     StartInfo = new ProcessStartInfo
                     {
                         FileName = "pkexec",
-                        Arguments = $"sudo {path} --bg",
+                        Arguments = $"sudo {path} --bg {currentPid}",
                         UseShellExecute = false,
                         CreateNoWindow = true,
                     },

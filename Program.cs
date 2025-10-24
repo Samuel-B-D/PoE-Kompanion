@@ -1,4 +1,4 @@
-﻿namespace PoEKompanion;
+namespace PoEKompanion;
 
 using System.Threading.Tasks;
 
@@ -6,10 +6,17 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Avalonia;
 
 internal static class Program
 {
+    private const int PR_SET_PDEATHSIG = 1;
+    private const int SIGTERM = 15;
+
+    [DllImport("libc", SetLastError = true)]
+    private static extern int prctl(int option, int arg2, int arg3, int arg4, int arg5);
+
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
@@ -26,10 +33,16 @@ internal static class Program
                 process.Kill(true);
             } catch (Exception) { /* nom */ }
         }
-        
+
         if (args.Length > 0 && args[0] == "--bg")
         {
-            await PoETracker.Instance.RunAsync();
+            if (OperatingSystem.IsLinux())
+            {
+                prctl(PR_SET_PDEATHSIG, SIGTERM, 0, 0, 0);
+            }
+
+            var parentPid = args.Length > 1 && int.TryParse(args[1], out var pid) ? pid : -1;
+            await PoETracker.Instance.RunAsync(parentPid);
         }
         else
         {

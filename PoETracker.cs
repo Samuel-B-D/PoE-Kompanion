@@ -32,9 +32,30 @@ internal sealed class PoETracker
         }, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
     }
 
-    public async Task RunAsync()
+    public async Task RunAsync(int parentProcessId)
     {
         this.ipc = await UnixSocketIpc.CreateClientAsync();
+
+        if (parentProcessId > 0)
+        {
+            _ = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await Task.Delay(1000);
+
+                    try
+                    {
+                        Process.GetProcessById(parentProcessId);
+                    }
+                    catch (ArgumentException)
+                    {
+                        Console.WriteLine("Parent process died, exiting...");
+                        Environment.Exit(0);
+                    }
+                }
+            });
+        }
 
         while (true)
         {
