@@ -65,13 +65,13 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
     {
         try
         {
-            // this.currentConfig.LogoutHotkey = this.LogoutHotkey;
             await ConfigurationManager.SaveAsync(this.currentConfig);
             this.Close();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error saving configuration: {ex.Message}");
+            NotificationManager.SendError("Error saving configuration");
             // TODO: Show user-friendly error dialog in Phase 5 with styled UI
         }
     }

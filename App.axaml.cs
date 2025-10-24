@@ -11,9 +11,8 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 
 using SharpHook;
-using SharpHook.Data;
 
-using PoEKompanion.Views;
+using Views;
 
 public class App : Application
 {
@@ -160,21 +159,21 @@ public class App : Application
 
                         if (this.bgProcess.ExitCode != 0)
                         {
-                            this.NotifyInitializationError();
+                            NotifyInitializationError();
                         }
                         else
                         {
-                            this.NotifyInitializationSuccess();
+                            NotifyInitializationSuccess();
                         }
                     }
                     catch (Exception)
                     {
-                        this.NotifyInitializationError();
+                        NotifyInitializationError();
                     }
                 }
                 else
                 {
-                    this.NotifyInitializationSuccess();
+                    NotifyInitializationSuccess();
                 }
             });
         }
@@ -200,29 +199,29 @@ public class App : Application
 
                     if (this.bgProcess.ExitCode != 0)
                     {
-                        this.NotifyInitializationError();
+                        NotifyInitializationError();
                     }
                     else
                     {
-                        this.NotifyInitializationSuccess();
+                        NotifyInitializationSuccess();
                     }
                 });
             }
             catch (Exception)
             {
-                this.NotifyInitializationError();
+                NotifyInitializationError();
             }
         }
     }
 
-    private void NotifyInitializationSuccess()
+    private static void NotifyInitializationSuccess()
     {
-        NotificationManager.SendInfo("PoE Kompanion", "initialized successfully!");
+        NotificationManager.SendInfo("initialized successfully!");
     }
     
-    private void NotifyInitializationError()
+    private static void NotifyInitializationError()
     {
-        NotificationManager.SendError("PoE Kompanion", "Failed to initialize; application will exit");
+        NotificationManager.SendError("Failed to initialize; application will exit");
         Environment.Exit(1);
     }
 

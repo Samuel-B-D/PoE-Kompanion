@@ -24,6 +24,61 @@
   currentHotkey = newHotkey;
   InitHook();
   ```
+- **Naming conventions**:
+  - Use `UPPER_SNAKE_CASE` for private const fields
+  ```csharp
+  // Good
+  private const string SERVER_SOCKET_PATH = "/tmp/poe-kompanion-server.sock";
+
+  // Bad
+  private const string ServerSocketPath = "/tmp/poe-kompanion-server.sock";
+  ```
+- **Method visibility**: Make methods `static` when they don't access instance state
+  ```csharp
+  // Good - static method that doesn't need instance
+  private static void NotifyInitializationSuccess()
+  {
+      NotificationManager.SendInfo("initialized successfully!");
+  }
+
+  // Bad - instance method unnecessarily
+  private void NotifyInitializationSuccess()
+  {
+      NotificationManager.SendInfo("initialized successfully!");
+  }
+  ```
+- **Ternary expressions**: Use ternary expressions for simple conditional assignments
+  ```csharp
+  // Good - simple ternary
+  return received == 0 ? null : MessagePackSerializer.Deserialize<IpcMessage>(buffer);
+
+  // Good - ternary with complex expression on new line
+  this.ipc?.SendAsync(proc?.Id is not null
+      ? new NotificationMessage("Path of Exile process detected!", false)
+      : new NotificationMessage("Path of Exile closed", false));
+
+  // Bad - unnecessary if/else for simple return
+  if (received == 0)
+  {
+      return null;
+  }
+  else
+  {
+      return MessagePackSerializer.Deserialize<IpcMessage>(buffer);
+  }
+  ```
+- **Expression-bodied members**: Use expression bodies for simple methods/properties
+  ```csharp
+  // Good - simple expression body
+  public static void SendInfo(string message) => Send(message, "normal");
+  private static void Send(string message, string urgency) => Send("PoE Kompanion", message, urgency);
+
+  // Acceptable - regular method body for clarity
+  private static void Send(string title, string message, string urgency)
+  {
+      // method implementation
+  }
+  ```
 - **Curly braces**:
   - **Always use curly braces** for all conditional statements and loops, except for single-line guard statements
   - **Guard statements exception**: Single-line conditions that return/throw should be on one line without curly braces
@@ -46,6 +101,26 @@
   if (value is null)
   {
       return;
+  }
+  ```
+- **Parameter order in records**: In MessagePack records, order parameters by importance/frequency of use
+  ```csharp
+  // Good - message first (most important), title last with default
+  public sealed record NotificationMessage(
+      [property: Key(0)] string Message,
+      [property: Key(1)] bool IsError,
+      [property: Key(2)] string Title = "PoE Kompanion"
+  ) : IpcMessage;
+  ```
+- **Exception handling**: Silent exceptions are acceptable when failure is expected and non-critical
+  ```csharp
+  // Good - silent catch for non-critical notification failures
+  catch (Exception) { /* nom */ }
+
+  // Also acceptable with comment
+  catch (Exception)
+  {
+      // Notification failure is non-critical, ignore
   }
   ```
 

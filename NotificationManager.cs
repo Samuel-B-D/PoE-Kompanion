@@ -5,16 +5,13 @@ using System.Diagnostics;
 
 public static class NotificationManager
 {
-    public static void SendInfo(string title, string message)
-    {
-        Send(title, message, "normal");
-    }
+    public static void SendInfo(string message) => Send(message, "normal");
+    public static void SendInfo(string title, string message) => Send(title, message, "normal");
+    
+    public static void SendError( string message) => Send(message, "critical");
+    public static void SendError(string title, string message) => Send(title, message, "critical");
 
-    public static void SendError(string title, string message)
-    {
-        Send(title, message, "critical");
-    }
-
+    private static void Send(string message, string urgency) => Send("PoE Kompanion", message, urgency);
     private static void Send(string title, string message, string urgency)
     {
         try
@@ -31,8 +28,6 @@ public static class NotificationManager
             };
             process.Start();
         }
-        catch (Exception)
-        {
-        }
+        catch (Exception) { /* nom */ }
     }
 }

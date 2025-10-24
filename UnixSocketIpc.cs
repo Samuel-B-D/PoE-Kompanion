@@ -10,8 +10,8 @@ using MessagePack;
 
 public sealed class UnixSocketIpc : IDisposable
 {
-    private const string ServerSocketPath = "/tmp/poe-kompanion-server.sock";
-    private const string ClientSocketPath = "/tmp/poe-kompanion-client.sock";
+    private const string SERVER_SOCKET_PATH = "/tmp/poe-kompanion-server.sock";
+    private const string CLIENT_SOCKET_PATH = "/tmp/poe-kompanion-client.sock";
     private readonly Socket socket;
     private readonly string? localPath;
     private readonly UnixDomainSocketEndPoint? remoteEndPoint;
@@ -25,57 +25,59 @@ public sealed class UnixSocketIpc : IDisposable
 
     public static async Task<UnixSocketIpc> CreateServerAsync()
     {
-        if (File.Exists(ServerSocketPath))
+        if (File.Exists(SERVER_SOCKET_PATH))
         {
-            File.Delete(ServerSocketPath);
+            File.Delete(SERVER_SOCKET_PATH);
         }
 
         var socket = new Socket(AddressFamily.Unix, SocketType.Dgram, ProtocolType.Unspecified);
-        socket.Bind(new UnixDomainSocketEndPoint(ServerSocketPath));
+        socket.Bind(new UnixDomainSocketEndPoint(SERVER_SOCKET_PATH));
 
-        var serverSocketInfo = new FileInfo(ServerSocketPath);
+        // ReSharper disable once UseObjectOrCollectionInitializer
+        var serverSocketInfo = new FileInfo(SERVER_SOCKET_PATH);
         serverSocketInfo.UnixFileMode = UnixFileMode.UserRead | UnixFileMode.UserWrite |
                                         UnixFileMode.GroupRead | UnixFileMode.GroupWrite |
                                         UnixFileMode.OtherRead | UnixFileMode.OtherWrite;
 
-        while (!File.Exists(ClientSocketPath))
+        while (!File.Exists(CLIENT_SOCKET_PATH))
         {
             await Task.Yield();
         }
 
-        var clientEndPoint = new UnixDomainSocketEndPoint(ClientSocketPath);
-        return new UnixSocketIpc(socket, ServerSocketPath, clientEndPoint);
+        var clientEndPoint = new UnixDomainSocketEndPoint(CLIENT_SOCKET_PATH);
+        return new UnixSocketIpc(socket, SERVER_SOCKET_PATH, clientEndPoint);
     }
 
     public static async Task<UnixSocketIpc> CreateClientAsync()
     {
-        if (File.Exists(ClientSocketPath))
+        if (File.Exists(CLIENT_SOCKET_PATH))
         {
-            File.Delete(ClientSocketPath);
+            File.Delete(CLIENT_SOCKET_PATH);
         }
 
         var socket = new Socket(AddressFamily.Unix, SocketType.Dgram, ProtocolType.Unspecified);
-        socket.Bind(new UnixDomainSocketEndPoint(ClientSocketPath));
+        socket.Bind(new UnixDomainSocketEndPoint(CLIENT_SOCKET_PATH));
 
-        var clientSocketInfo = new FileInfo(ClientSocketPath);
+        // ReSharper disable once UseObjectOrCollectionInitializer
+        var clientSocketInfo = new FileInfo(CLIENT_SOCKET_PATH);
         clientSocketInfo.UnixFileMode = UnixFileMode.UserRead | UnixFileMode.UserWrite |
                                         UnixFileMode.GroupRead | UnixFileMode.GroupWrite |
                                         UnixFileMode.OtherRead | UnixFileMode.OtherWrite;
 
-        while (!File.Exists(ServerSocketPath))
+        while (!File.Exists(SERVER_SOCKET_PATH))
         {
             await Task.Yield();
         }
 
-        var serverEndPoint = new UnixDomainSocketEndPoint(ServerSocketPath);
-        return new UnixSocketIpc(socket, ClientSocketPath, serverEndPoint);
+        var serverEndPoint = new UnixDomainSocketEndPoint(SERVER_SOCKET_PATH);
+        return new UnixSocketIpc(socket, CLIENT_SOCKET_PATH, serverEndPoint);
     }
 
     public async Task SendAsync(IpcMessage message, CancellationToken cancellationToken = default)
     {
         if (this.remoteEndPoint is null) return;
 
-        var buffer = MessagePackSerializer.Serialize(message);
+        var buffer = MessagePackSerializer.Serialize(message, cancellationToken: cancellationToken);
         await this.socket.SendToAsync(buffer, SocketFlags.None, this.remoteEndPoint, cancellationToken);
     }
 
@@ -84,9 +86,9 @@ public sealed class UnixSocketIpc : IDisposable
         var buffer = new byte[4096];
         var received = await this.socket.ReceiveAsync(buffer, SocketFlags.None, cancellationToken);
 
-        if (received == 0) return null;
-
-        return MessagePackSerializer.Deserialize<IpcMessage>(buffer.AsMemory(0, received));
+        return received == 0 
+            ? null 
+            : MessagePackSerializer.Deserialize<IpcMessage>(buffer.AsMemory(0, received), cancellationToken: cancellationToken);
     }
 
     public void Dispose()

@@ -82,5 +82,5 @@ public static class ConfigurationManager
         }
     }
 
-    public static ConfigurationModel GetDefault() => new() { LogoutHotkey = KeyCode.VcBackQuote };
+    private static ConfigurationModel GetDefault() => new() { LogoutHotkey = KeyCode.VcBackQuote };
 }

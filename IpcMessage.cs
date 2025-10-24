@@ -11,4 +11,8 @@ public abstract record IpcMessage;
 public sealed record ForceLogoutMessage : IpcMessage;
 
 [MessagePackObject]
-public sealed record NotificationMessage([property: Key(0)] string Title, [property: Key(1)] string Message, [property: Key(2)] bool IsError) : IpcMessage;
+public sealed record NotificationMessage(
+    [property: Key(0)] string Message, 
+    [property: Key(1)] bool IsError,
+    [property: Key(2)] string Title = "PoE Kompanion"
+) : IpcMessage;

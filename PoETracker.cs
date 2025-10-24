@@ -57,20 +57,15 @@ internal sealed class PoETracker
         {
             Console.WriteLine($"PoE Process ID: {proc?.Id}");
 
-            if (proc?.Id is not null)
-            {
-                this.ipc?.SendAsync(new NotificationMessage("PoE Kompanion", "Path of Exile process detected and hooked!", false));
-            }
-            else
-            {
-                this.ipc?.SendAsync(new NotificationMessage("PoE Kompanion", "Path of Exile closed", false));
-            }
+            this.ipc?.SendAsync(proc?.Id is not null
+                ? new NotificationMessage("Path of Exile process detected and hooked!", false)
+                : new NotificationMessage("Path of Exile closed", false));
         }
 
         this.poeProcess = proc;
     }
 
-    async Task FindGameConnections()
+    private async Task FindGameConnections()
     {
         if (this.poeProcess is null) return;
 
@@ -108,7 +103,7 @@ internal sealed class PoETracker
         }
     }
 
-    async Task CloseGameConnections()
+    private async Task CloseGameConnections()
     {
         foreach (var connection in this.openedPoEConnections)
         {
@@ -127,7 +122,7 @@ internal sealed class PoETracker
         this.openedPoEConnections.Clear();
     }
 
-    static void SendRstPacket(OpenedPoEConnection openedPoEConnection)
+    private static void SendRstPacket(OpenedPoEConnection openedPoEConnection)
     {
         try
         {
@@ -142,7 +137,7 @@ internal sealed class PoETracker
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     CreateNoWindow = true,
-                }
+                },
             };
             proc.Start();
             proc.WaitForExit();
@@ -155,7 +150,7 @@ internal sealed class PoETracker
         }
     }
 
-    static async Task<HashSet<string>> GetInodesForPid(int pid)
+    private static async Task<HashSet<string>> GetInodesForPid(int pid)
     {
         var inodes = new HashSet<string>();
         var inodesLock = new Lock();
@@ -209,7 +204,7 @@ internal sealed class PoETracker
         return inodes;
     }
 
-    static async IAsyncEnumerable<OpenedPoEConnection> FindGameOpenedConnections(string path, HashSet<string> inodes, string protocol)
+    private static async IAsyncEnumerable<OpenedPoEConnection> FindGameOpenedConnections(string path, HashSet<string> inodes, string protocol)
     {
         if (!File.Exists(path))
         {
@@ -217,7 +212,7 @@ internal sealed class PoETracker
             yield break;
         }
 
-        bool first = true;
+        var first = true;
         await foreach (var line in File.ReadLinesAsync(path))
         {
             if (first)
@@ -251,7 +246,7 @@ internal sealed class PoETracker
         }
     }
 
-    static string HexToIp(string hex)
+    private static string HexToIp(string hex)
     {
         var bytes = new byte[4];
         for (var i = 0; i < 4; ++i)
