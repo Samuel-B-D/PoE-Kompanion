@@ -13,10 +13,10 @@ using Avalonia.Markup.Xaml;
 
 public class App : Application
 {
-    private const KeyCode HOTKEY = KeyCode.VcBackQuote;
-    
+    private KeyCode currentHotkey;
+
     private Process? bgProcess;
-    
+
     private readonly EventLoopGlobalHook hook = new();
     
     public override void Initialize()
@@ -28,6 +28,10 @@ public class App : Application
     {
         if (this.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            // Load configuration
+            var config = ConfigurationManager.Load();
+            this.currentHotkey = config.LogoutHotkey;
+
             string path = Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.FriendlyName));
 
             var args = desktop.Args;
@@ -50,7 +54,7 @@ public class App : Application
     {
         this.hook.KeyPressed += (_, args) =>
         {
-            if (args.Data.KeyCode == HOTKEY)
+            if (args.Data.KeyCode == this.currentHotkey)
             {
                 if (this.bgProcess is null) return;
                 this.bgProcess.StandardInput.Write((char)DispatchedActions.ForceLogout);
