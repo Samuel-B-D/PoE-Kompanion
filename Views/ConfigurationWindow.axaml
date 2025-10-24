@@ -3,8 +3,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:PoEKompanion.Controls"
+        xmlns:views="clr-namespace:PoEKompanion.Views"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="250"
         x:Class="PoEKompanion.Views.ConfigurationWindow"
+        x:DataType="views:ConfigurationWindow"
         Title="PoE Kompanion Configuration"
         Width="400"
         Height="250"
@@ -22,7 +24,8 @@
                        Margin="0,0,10,0" />
             <controls:HotkeyPickerButton x:Name="LogoutHotkeyPicker"
                                          Grid.Column="1"
-                                         HorizontalAlignment="Stretch" />
+                                         HorizontalAlignment="Stretch"
+                                         SelectedKeyCode="{Binding LogoutHotkey}" />
         </Grid>
 
         <Grid ColumnDefinitions="*,*" Margin="0,40,0,0">

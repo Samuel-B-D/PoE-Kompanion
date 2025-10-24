@@ -4,14 +4,16 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Threading;
-using PoEKompanion.Views;
-using SharpHook;
-using SharpHook.Data;
 
 using Avalonia;
 using Avalonia.Markup.Xaml;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Threading;
+
+using SharpHook;
+using SharpHook.Data;
+
+using PoEKompanion.Views;
 
 public class App : Application
 {
@@ -59,11 +61,13 @@ public class App : Application
         this.currentHotkey = config.LogoutHotkey;
         
         this.StartBackgroundProcess(backgroundProcessPath);
-        this.InitHook();
+        this.StartMainHook();
     }
     
-    private void InitHook()
+    private void StartMainHook()
     {
+        if (this.hook is not null) return;
+        
         this.hook = new EventLoopGlobalHook();
         this.hook.KeyPressed += (_, args) =>
         {
@@ -76,19 +80,10 @@ public class App : Application
         _ = Task.Run(() => this.hook.RunAsync());
     }
 
-    public async Task SuspendMainHookAsync()
+    public void StopMainHook()
     {
-        if (this.hook is null) return;
-
-        var hookToDispose = this.hook;
+        this.hook?.Dispose();
         this.hook = null;
-        await Task.Run(() => hookToDispose.Dispose());
-    }
-
-    public void ResumeMainHook()
-    {
-        if (this.hook is not null) return;
-        InitHook();
     }
 
     private void StartBackgroundProcess(string path)
@@ -97,7 +92,6 @@ public class App : Application
         {
             StartInfo = new ProcessStartInfo
             {
-                // FileName = path,
                 FileName = "pkexec",
                 Arguments = $"sudo {path} --bg",
                 UseShellExecute = false,
@@ -105,12 +99,14 @@ public class App : Application
                 RedirectStandardOutput = false,
                 RedirectStandardError = false,
                 CreateNoWindow = true,
-            }
+            },
         };
         this.bgProcess.Start();
     }
 
-    private async void ConfigureAction(object? sender, EventArgs e)
+    private void ConfigureAction(object? sender, EventArgs e) => _ = this.OpenConfiguration();
+    
+    private async Task OpenConfiguration()
     {
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
@@ -118,38 +114,11 @@ public class App : Application
             configWindow.Closed += async (_, _) =>
             {
                 var newConfig = await ConfigurationManager.LoadAsync();
-                if (newConfig.LogoutHotkey != this.currentHotkey)
-                {
-                    this.currentHotkey = newConfig.LogoutHotkey;
-                }
-                ResumeMainHook();
+                this.currentHotkey = newConfig.LogoutHotkey;
+                this.StartMainHook();
             };
             configWindow.Show();
         });
-    }
-
-    private async Task UpdateHotkeyAsync(KeyCode newHotkey)
-    {
-        var oldHook = this.hook;
-
-        this.currentHotkey = newHotkey;
-
-        this.hook = new EventLoopGlobalHook();
-        this.hook.KeyPressed += (_, args) =>
-        {
-            if (args.Data.KeyCode != this.currentHotkey) return;
-            if (this.bgProcess is null) return;
-
-            this.bgProcess.StandardInput.Write((char)DispatchedActions.ForceLogout);
-            this.bgProcess.StandardInput.Flush();
-        };
-
-        _ = Task.Run(() => this.hook.RunAsync());
-
-        if (oldHook is not null)
-        {
-            await Task.Run(() => oldHook.Dispose());
-        }
     }
 
     private void ExitAction(object? sender, EventArgs e)

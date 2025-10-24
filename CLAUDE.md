@@ -14,6 +14,16 @@
 ## General Style
 
 - **Prefer `var`**: Use `var` for local variable declarations instead of explicit types
+- **Always use `this.` prefix**: All member access must be prefixed with `this.` for clarity
+  ```csharp
+  // Good
+  this.currentHotkey = newHotkey;
+  this.InitHook();
+
+  // Bad
+  currentHotkey = newHotkey;
+  InitHook();
+  ```
 - **Curly braces**:
   - **Always use curly braces** for all conditional statements and loops, except for single-line guard statements
   - **Guard statements exception**: Single-line conditions that return/throw should be on one line without curly braces
@@ -45,8 +55,62 @@
 - **Minimal comments**: Only comment non-trivial logic
 - Code should be self-explanatory through clear naming
 
+## Avalonia UI Patterns
+
+- **Prefer data binding over direct control manipulation**: Use XAML bindings instead of finding controls in code-behind
+  ```csharp
+  // Good - use binding in XAML
+  <controls:HotkeyPickerButton SelectedKeyCode="{Binding LogoutHotkey}" />
+
+  // Bad - find control and manipulate directly
+  var picker = this.FindControl<HotkeyPickerButton>("LogoutHotkeyPicker");
+  picker.SelectedKeyCode = value;
+  ```
+- **Use Avalonia's StyledProperty system**: For custom controls, implement properties as `StyledProperty` for proper binding support
+  ```csharp
+  // Good - proper Avalonia property
+  public static readonly StyledProperty<KeyCode> SelectedKeyCodeProperty =
+      AvaloniaProperty.Register<HotkeyPickerButton, KeyCode>(
+          nameof(SelectedKeyCode),
+          KeyCode.VcBackQuote,
+          defaultBindingMode: BindingMode.TwoWay);
+
+  public KeyCode SelectedKeyCode
+  {
+      get => this.GetValue(SelectedKeyCodeProperty);
+      set => this.SetValue(SelectedKeyCodeProperty, value);
+  }
+  ```
+- **Property change notifications**: Use static constructor with `AddClassHandler` for property change callbacks
+  ```csharp
+  static HotkeyPickerButton()
+  {
+      SelectedKeyCodeProperty.Changed.AddClassHandler<HotkeyPickerButton>((control, args) =>
+      {
+          control.OnPropertyChanged(nameof(KeyDisplayName));
+      });
+  }
+  ```
+- **Element name binding for internal control properties**: Use `x:Name` and `{Binding #ElementName.Property}` for bindings within a control
+  ```xml
+  <UserControl x:Name="Root">
+      <Button Content="{Binding #Root.KeyDisplayName}" />
+  </UserControl>
+  ```
+- **Keep models simple**: Data models should be POCOs without UI concerns (no INotifyPropertyChanged on models)
+- **Windows/Views as ViewModels**: Let windows/views handle INotifyPropertyChanged and act as their own view models for simple scenarios
+
 ## Asynchronous Programming
 
+- **NEVER use `async void`**: Always return `Task` for async methods
+  ```csharp
+  // Good - returns Task
+  private async Task SaveConfiguration() { ... }
+  private void OnSaveClick(object? sender, RoutedEventArgs e) => _ = this.SaveConfiguration();
+
+  // Bad - async void
+  private async void OnSaveClick(object? sender, RoutedEventArgs e) { ... }
+  ```
 - **Prefer async I/O**: Use async/await for all I/O operations whenever possible
   - Use `File.ReadAllTextAsync()` / `File.WriteAllTextAsync()` instead of synchronous variants
   - Use `JsonSerializer.SerializeAsync()` / `JsonSerializer.DeserializeAsync()` instead of synchronous variants
@@ -54,17 +118,56 @@
 - **Parallelization**: Use parallelization when it's trivial to implement
 - **IAsyncEnumerable**: Use `IAsyncEnumerable<T>` where it makes sense for streaming data
 
-## Examples
+## Complete Example
 
 ```csharp
-// Good
-var config = await LoadConfigAsync();
-if (config is null) return default;
-
-// Bad
-ConfigurationModel config = LoadConfig();
-if (config is null)
+// Good - follows all conventions
+public class ConfigurationWindow : Window, INotifyPropertyChanged
 {
-    return default;
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private ConfigurationModel currentConfig;
+    private KeyCode logoutHotkey;
+
+    public KeyCode LogoutHotkey
+    {
+        get => this.logoutHotkey;
+        set
+        {
+            if (this.logoutHotkey == value) return;
+            this.logoutHotkey = value;
+            this.OnPropertyChanged();
+        }
+    }
+
+    public ConfigurationWindow()
+    {
+        this.InitializeComponent();
+        this.DataContext = this;
+        _ = this.LoadConfiguration();
+    }
+
+    private async Task LoadConfiguration()
+    {
+        this.currentConfig = await ConfigurationManager.LoadAsync();
+        this.LogoutHotkey = this.currentConfig.LogoutHotkey;
+    }
+
+    private async Task SaveConfiguration()
+    {
+        this.currentConfig.LogoutHotkey = this.LogoutHotkey;
+        await ConfigurationManager.SaveAsync(this.currentConfig);
+        this.Close();
+    }
+
+    private void OnSaveClick(object? sender, RoutedEventArgs e) => _ = this.SaveConfiguration();
+
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 }
+
+// XAML with proper binding
+<controls:HotkeyPickerButton SelectedKeyCode="{Binding LogoutHotkey}" />
 ```

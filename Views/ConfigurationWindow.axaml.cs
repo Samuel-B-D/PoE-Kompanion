@@ -1,31 +1,42 @@
 namespace PoEKompanion.Views;
 
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using PoEKompanion.Controls;
 using SharpHook.Data;
 
-public partial class ConfigurationWindow : Window
+public partial class ConfigurationWindow : Window, INotifyPropertyChanged
 {
-    private readonly HotkeyPickerButton _logoutHotkeyPicker;
-    private ConfigurationModel _currentConfig;
+    public new event PropertyChangedEventHandler? PropertyChanged;
 
-    public KeyCode SelectedLogoutHotkey => _logoutHotkeyPicker.SelectedKeyCode;
+    private ConfigurationModel currentConfig;
+
+    private KeyCode logoutHotkey;
+    public KeyCode LogoutHotkey
+    {
+        get => this.logoutHotkey;
+        set
+        {
+            if (this.logoutHotkey == value) return;
+            this.logoutHotkey = value;
+            this.OnPropertyChanged();
+        }
+    }
 
     public ConfigurationWindow()
     {
-        InitializeComponent();
+        this.currentConfig = new ConfigurationModel();
 
-        _logoutHotkeyPicker = this.FindControl<HotkeyPickerButton>("LogoutHotkeyPicker")
-                              ?? throw new InvalidOperationException("LogoutHotkeyPicker not found");
+        this.InitializeComponent();
+        this.DataContext = this;
 
-        _currentConfig = new ConfigurationModel();
-        LoadConfiguration();
+        _ = this.LoadConfiguration();
 
-        Opened += async (_, _) => await App.Instance?.SuspendMainHookAsync()!;
+        this.Opened += (_, _) => App.Instance?.StopMainHook();
     }
 
     private void InitializeComponent()
@@ -33,19 +44,19 @@ public partial class ConfigurationWindow : Window
         AvaloniaXamlLoader.Load(this);
     }
 
-    private async void LoadConfiguration()
+    private async Task LoadConfiguration()
     {
-        _currentConfig = await ConfigurationManager.LoadAsync();
-        _logoutHotkeyPicker.SelectedKeyCode = _currentConfig.LogoutHotkey;
+        this.currentConfig = await ConfigurationManager.LoadAsync();
+        this.LogoutHotkey = this.currentConfig.LogoutHotkey;
     }
-
-    private async void OnSaveClick(object? sender, RoutedEventArgs e)
+    
+    private async Task SaveConfiguration()
     {
         try
         {
-            _currentConfig.LogoutHotkey = _logoutHotkeyPicker.SelectedKeyCode;
-            await ConfigurationManager.SaveAsync(_currentConfig);
-            Close();
+            this.currentConfig.LogoutHotkey = this.LogoutHotkey;
+            await ConfigurationManager.SaveAsync(this.currentConfig);
+            this.Close();
         }
         catch (Exception ex)
         {
@@ -53,8 +64,15 @@ public partial class ConfigurationWindow : Window
         }
     }
 
+    private void OnSaveClick(object? sender, RoutedEventArgs e) => _ = this.SaveConfiguration();
+
     private void OnCancelClick(object? sender, RoutedEventArgs e)
     {
-        Close();
+        this.Close();
+    }
+
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

@@ -5,16 +5,17 @@
              xmlns:controls="clr-namespace:PoEKompanion.Controls"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="30"
              x:Class="PoEKompanion.Controls.HotkeyPickerButton"
-             x:DataType="controls:HotkeyPickerButton">
+             x:DataType="controls:HotkeyPickerButton"
+             x:Name="Root">
     <Button Name="PickerButton"
-            Content="{Binding KeyDisplayName}"
+            Content="{Binding #Root.KeyDisplayName}"
             Click="OnButtonClick"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             MinWidth="150"
             Height="30">
         <ToolTip.Tip>
-            <ToolTip IsVisible="{Binding IsListening}"
+            <ToolTip IsVisible="{Binding #Root.IsListening}"
                      Placement="Right">
                 <TextBlock Text="Press a key or mouse button to bind it to this action (press escape to cancel)" />
             </ToolTip>

@@ -4,7 +4,9 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
@@ -13,41 +15,47 @@ using SharpHook.Data;
 
 public partial class HotkeyPickerButton : UserControl, INotifyPropertyChanged
 {
-    private KeyCode _selectedKeyCode = KeyCode.VcBackQuote;
-    private bool _isListening;
-    private SimpleGlobalHook? _captureHook;
+    private bool isListening;
+    private SimpleGlobalHook? captureHook;
 
     public new event PropertyChangedEventHandler? PropertyChanged;
 
+    public static readonly StyledProperty<KeyCode> SelectedKeyCodeProperty =
+        AvaloniaProperty.Register<HotkeyPickerButton, KeyCode>(
+            nameof(SelectedKeyCode),
+            KeyCode.VcBackQuote,
+            defaultBindingMode: BindingMode.TwoWay);
+
     public KeyCode SelectedKeyCode
     {
-        get => _selectedKeyCode;
-        set
+        get => this.GetValue(SelectedKeyCodeProperty);
+        set => this.SetValue(SelectedKeyCodeProperty, value);
+    }
+
+    static HotkeyPickerButton()
+    {
+        SelectedKeyCodeProperty.Changed.AddClassHandler<HotkeyPickerButton>((control, args) =>
         {
-            if (_selectedKeyCode == value) return;
-            _selectedKeyCode = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(KeyDisplayName));
-        }
+            control.OnPropertyChanged(nameof(KeyDisplayName));
+        });
     }
 
     public bool IsListening
     {
-        get => _isListening;
+        get => this.isListening;
         private set
         {
-            if (_isListening == value) return;
-            _isListening = value;
-            OnPropertyChanged();
+            if (this.isListening == value) return;
+            this.isListening = value;
+            this.OnPropertyChanged();
         }
     }
 
-    public string KeyDisplayName => FormatKeyName(_selectedKeyCode);
+    public string KeyDisplayName => FormatKeyName(this.SelectedKeyCode);
 
     public HotkeyPickerButton()
     {
-        InitializeComponent();
-        DataContext = this;
+        this.InitializeComponent();
     }
 
     private void InitializeComponent()
@@ -55,64 +63,65 @@ public partial class HotkeyPickerButton : UserControl, INotifyPropertyChanged
         AvaloniaXamlLoader.Load(this);
     }
 
-    private async void OnButtonClick(object? sender, RoutedEventArgs e)
-    {
-        if (IsListening) return;
+    private void OnButtonClick(object? sender, RoutedEventArgs e) => _ = this.StartListening();
 
-        IsListening = true;
-        await StartKeyCapture();
+    private async Task StartListening()
+    {
+        if (this.IsListening) return;
+
+        this.IsListening = true;
+        await this.StartKeyCaptureAsync();
     }
 
-    private async Task StartKeyCapture()
+    private async Task StartKeyCaptureAsync()
     {
         try
         {
-            _captureHook = new SimpleGlobalHook();
+            this.captureHook = new SimpleGlobalHook();
 
-            _captureHook.KeyPressed += async (_, args) =>
+            this.captureHook.KeyPressed += async (_, args) =>
             {
                 var keyCode = args.Data.KeyCode;
 
                 if (keyCode == KeyCode.VcEscape)
                 {
-                    await Dispatcher.UIThread.InvokeAsync(async () => await StopKeyCaptureAsync());
+                    await Dispatcher.UIThread.InvokeAsync(async () => await this.StopKeyCaptureAsync());
                     return;
                 }
 
-                await Dispatcher.UIThread.InvokeAsync(() => SelectedKeyCode = keyCode);
-                await Dispatcher.UIThread.InvokeAsync(async () => await StopKeyCaptureAsync());
+                await Dispatcher.UIThread.InvokeAsync(() => this.SelectedKeyCode = keyCode);
+                await Dispatcher.UIThread.InvokeAsync(async () => await this.StopKeyCaptureAsync());
             };
 
-            await Task.Run(() => _captureHook.Run());
+            await Task.Run(() => this.captureHook.Run());
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error during key capture: {ex.Message}");
-            await StopKeyCaptureAsync();
+            await this.StopKeyCaptureAsync();
         }
     }
 
     private async Task StopKeyCaptureAsync()
     {
-        if (_captureHook is null) return;
+        if (this.captureHook is null) return;
 
-        var hookToDispose = _captureHook;
-        _captureHook = null;
+        var hookToDispose = this.captureHook;
+        this.captureHook = null;
 
         await Task.Run(() => hookToDispose.Dispose());
 
-        await Dispatcher.UIThread.InvokeAsync(() => IsListening = false);
+        await Dispatcher.UIThread.InvokeAsync(() => this.IsListening = false);
     }
 
     private static string FormatKeyName(KeyCode keyCode)
     {
         var name = keyCode.ToString();
-        if (name.StartsWith("Vc")) return name.Substring(2);
-        return name;
+        return name.StartsWith("Vc") ? name[2..] : name;
     }
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
