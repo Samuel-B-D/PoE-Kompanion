@@ -10,6 +10,7 @@ using SharpHook.Data;
 public class ConfigurationModel
 {
     public KeyCode LogoutHotkey { get; set; } = KeyCode.VcBackQuote;
+    public KeyCode OpenSettingsHotkey { get; set; } = KeyCode.VcF10;
 }
 
 [JsonSerializable(typeof(ConfigurationModel))]

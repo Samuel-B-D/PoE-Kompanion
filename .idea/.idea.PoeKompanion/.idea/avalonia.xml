@@ -5,6 +5,7 @@
       <map>
         <entry key="App.axaml" value="PoEKompanion.csproj" />
         <entry key="Controls/HotkeyPickerButton.axaml" value="PoEKompanion.csproj" />
+        <entry key="Styles/PoETheme.axaml" value="PoEKompanion.csproj" />
         <entry key="Views/ConfigurationWindow.axaml" value="PoEKompanion.csproj" />
       </map>
     </option>

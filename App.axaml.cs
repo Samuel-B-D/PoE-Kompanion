@@ -17,7 +17,7 @@ using PoEKompanion.Views;
 
 public class App : Application
 {
-    private KeyCode currentHotkey;
+    private ConfigurationModel? config;
 
     private Process? bgProcess;
 
@@ -57,8 +57,7 @@ public class App : Application
 
     private async Task InitAsync(string backgroundProcessPath)
     {
-        var config = await ConfigurationManager.LoadAsync();
-        this.currentHotkey = config.LogoutHotkey;
+        this.config = await ConfigurationManager.LoadAsync();
         
         this.StartBackgroundProcess(backgroundProcessPath);
         this.StartMainHook();
@@ -69,13 +68,19 @@ public class App : Application
         if (this.hook is not null) return;
         
         this.hook = new EventLoopGlobalHook();
-        this.hook.KeyPressed += (_, args) =>
+        this.hook.KeyPressed += async (_, args) =>
         {
-            if (args.Data.KeyCode != this.currentHotkey) return;
-            if (this.bgProcess is null) return;
+            if (args.Data.KeyCode == this.config?.LogoutHotkey)
+            {
+                if (this.bgProcess is null) return;
 
-            this.bgProcess.StandardInput.Write((char)DispatchedActions.ForceLogout);
-            this.bgProcess.StandardInput.Flush();
+                await this.bgProcess.StandardInput.WriteAsync((char)DispatchedActions.ForceLogout);
+                await this.bgProcess.StandardInput.FlushAsync();
+            }
+            else if (args.Data.KeyCode == this.config?.OpenSettingsHotkey)
+            {
+                await this.OpenConfiguration();
+            }
         };
         _ = Task.Run(() => this.hook.RunAsync());
     }
@@ -113,8 +118,7 @@ public class App : Application
             var configWindow = new ConfigurationWindow();
             configWindow.Closed += async (_, _) =>
             {
-                var newConfig = await ConfigurationManager.LoadAsync();
-                this.currentHotkey = newConfig.LogoutHotkey;
+                this.config = await ConfigurationManager.LoadAsync();
                 this.StartMainHook();
             };
             configWindow.Show();

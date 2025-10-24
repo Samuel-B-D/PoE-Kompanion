@@ -15,14 +15,24 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
 
     private ConfigurationModel currentConfig;
 
-    private KeyCode logoutHotkey;
     public KeyCode LogoutHotkey
     {
-        get => this.logoutHotkey;
+        get => this.currentConfig.LogoutHotkey;
         set
         {
-            if (this.logoutHotkey == value) return;
-            this.logoutHotkey = value;
+            if (this.currentConfig.LogoutHotkey == value) return;
+            this.currentConfig.LogoutHotkey = value;
+            this.OnPropertyChanged();
+        }
+    }
+    
+    public KeyCode OpenSettingsHotkey
+    {
+        get => this.currentConfig.OpenSettingsHotkey;
+        set
+        {
+            if (this.currentConfig.OpenSettingsHotkey == value) return;
+            this.currentConfig.OpenSettingsHotkey = value;
             this.OnPropertyChanged();
         }
     }
@@ -47,14 +57,15 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
     private async Task LoadConfiguration()
     {
         this.currentConfig = await ConfigurationManager.LoadAsync();
-        this.LogoutHotkey = this.currentConfig.LogoutHotkey;
+        this.OnPropertyChanged(nameof(this.LogoutHotkey));
+        this.OnPropertyChanged(nameof(this.OpenSettingsHotkey));
     }
     
     private async Task SaveConfiguration()
     {
         try
         {
-            this.currentConfig.LogoutHotkey = this.LogoutHotkey;
+            // this.currentConfig.LogoutHotkey = this.LogoutHotkey;
             await ConfigurationManager.SaveAsync(this.currentConfig);
             this.Close();
         }

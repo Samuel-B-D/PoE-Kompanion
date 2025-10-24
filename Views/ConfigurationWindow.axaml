@@ -1,19 +1,20 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:controls="clr-namespace:PoEKompanion.Controls"
-        xmlns:views="clr-namespace:PoEKompanion.Views"
-        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="250"
-        x:Class="PoEKompanion.Views.ConfigurationWindow"
-        x:DataType="views:ConfigurationWindow"
-        Title="PoE Kompanion Configuration"
-        Width="400"
-        Height="250"
-        CanResize="False"
-        WindowStartupLocation="CenterScreen"
-        ShowInTaskbar="False"
-        Classes="PoEStyle">
+<Window 
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="clr-namespace:PoEKompanion.Controls"
+    xmlns:views="clr-namespace:PoEKompanion.Views"
+    mc:Ignorable="d"
+    x:Class="PoEKompanion.Views.ConfigurationWindow"
+    x:DataType="views:ConfigurationWindow"
+    Title="PoE Kompanion Configuration"
+    CanResize="False"
+    WindowStartupLocation="CenterScreen"
+    ShowInTaskbar="True"
+    Width="400"
+    SizeToContent="Height"
+>
 
     <Window.Styles>
         <StyleInclude Source="/Styles/PoETheme.axaml"/>
@@ -23,37 +24,40 @@
             BorderBrush="{StaticResource PoEBorderLightBrush}"
             BorderThickness="2"
             Padding="20">
-        <StackPanel Spacing="20">
-            <TextBlock Text="Hotkeys" Classes="PoEHeading" />
-
-            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto" Margin="0,10,0,0">
-                <TextBlock Grid.Column="0"
-                           Text="Logout Hotkey:"
-                           Classes="PoELabel"
-                           VerticalAlignment="Center"
-                           Margin="0,0,10,0" />
-                <controls:HotkeyPickerButton x:Name="LogoutHotkeyPicker"
-                                             Grid.Column="1"
-                                             HorizontalAlignment="Stretch"
-                                             SelectedKeyCode="{Binding LogoutHotkey}" />
-            </Grid>
-
-            <Grid ColumnDefinitions="*,*" Margin="0,40,0,0">
-                <Button Grid.Column="0"
+        <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Text="Hotkeys" Classes="PoEHeading" />
+            <Grid DockPanel.Dock="Bottom"
+                  ColumnDefinitions="*,*"
+                  HorizontalAlignment="Stretch"
+                  Margin="0,10,0,0">
+                <Button Grid.Column="0" 
                         Content="SAVE"
-                        Classes="PoEButton"
                         Click="OnSaveClick"
                         HorizontalAlignment="Stretch"
                         Margin="0,0,5,0"
                         Height="35" />
-                <Button Grid.Column="1"
+                <Button Grid.Column="1" 
                         Content="CLOSE"
-                        Classes="PoEButton"
                         Click="OnCancelClick"
                         HorizontalAlignment="Stretch"
                         Margin="5,0,0,0"
                         Height="35" />
             </Grid>
-        </StackPanel>
+
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="20" 
+                  RowDefinitions="Auto, Auto" RowSpacing="10"
+                  Margin="0 10 0 20">
+                <Label Grid.Column="0" Grid.Row="0" Content="Logout:" />
+                <controls:HotkeyPickerButton 
+                    Grid.Column="1" Grid.Row="0"
+                    SelectedKeyCode="{Binding LogoutHotkey}" />
+                
+                <Label Grid.Column="0" Grid.Row="1" Content="Open Settings:" />
+                <controls:HotkeyPickerButton 
+                    Grid.Column="1" Grid.Row="1"
+                    SelectedKeyCode="{Binding OpenSettingsHotkey}" />
+            </Grid>
+
+        </DockPanel>
     </Border>
 </Window>
