@@ -73,17 +73,23 @@ internal sealed class PoETracker
     {
         // Filter for process with PathOfExileSteam in command line
         var proc = Process.GetProcesses().FirstOrDefault(p => p.ProcessName.StartsWith("PathOfExileSte"));
+        var oldProcId = this.poeProcess?.Id;
+        this.poeProcess = proc;
 
-        if (this.poeProcess?.Id != proc?.Id)
+        if (oldProcId != proc?.Id)
         {
             Console.WriteLine($"PoE Process ID: {proc?.Id}");
 
-            this.ipc?.SendAsync(proc?.Id is not null
-                ? new NotificationMessage("Path of Exile process detected and hooked!", false)
-                : new NotificationMessage("Path of Exile closed", false));
+            if (proc?.Id is not null)
+            {
+                _ = this.ipc?.SendAsync(new NotificationMessage("Path of Exile process detected and hooked!", false));
+                _ = this.ipc?.SendAsync(new SetAlwaysOnTopMessage(proc.Id));
+            }
+            else
+            {
+                this.ipc?.SendAsync(new NotificationMessage("Path of Exile closed", false));
+            }
         }
-
-        this.poeProcess = proc;
     }
 
     private async Task FindGameConnections()
@@ -200,7 +206,7 @@ internal sealed class PoETracker
                             UseShellExecute = false,
                             RedirectStandardOutput = true,
                             CreateNoWindow = true,
-                        }
+                        },
                     };
                     proc.Start();
                     var link = (await proc.StandardOutput.ReadToEndAsync(ct)).Trim();

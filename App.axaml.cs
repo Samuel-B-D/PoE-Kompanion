@@ -91,6 +91,16 @@ public class App : Application
                     NotificationManager.SendInfo(notification.Title, notification.Message);
                 }
             }
+            else if (message is SetAlwaysOnTopMessage setAlwaysOnTop)
+            {
+                _ = Task.Run(() =>
+                {
+                    if (X11WindowManager.TrySetAlwaysOnTop(setAlwaysOnTop.ProcessId))
+                    {
+                        Console.WriteLine("Set PoE window to always-on-top");
+                    }
+                });
+            }
         }
     }
     
@@ -123,7 +133,7 @@ public class App : Application
 
     private void StartBackgroundProcess(string path)
     {
-        var currentPid = Process.GetCurrentProcess().Id;
+        var currentPid = Environment.ProcessId;
 
         try
         {

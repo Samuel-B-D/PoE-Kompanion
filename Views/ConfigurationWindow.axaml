@@ -13,6 +13,7 @@
     WindowStartupLocation="CenterScreen"
     SystemDecorations="None"
     ShowInTaskbar="True"
+    Topmost="True"
     Width="400"
     SizeToContent="Height"
 >
@@ -44,6 +45,7 @@
                 <Button Grid.Column="1" 
                         Click="OnCancelClick"
                         Content="CLOSE"
+                        IsCancel="True"
                         HorizontalAlignment="Stretch"
                         Margin="5,0,0,0"
                         Height="35" />
