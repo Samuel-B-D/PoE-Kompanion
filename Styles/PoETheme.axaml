@@ -100,8 +100,8 @@
 
     <!-- PoE ToolTip Style -->
     <Style Selector="ToolTip">
-        <Setter Property="Background" Value="{StaticResource PoEDarkBackgroundBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource PoEGoldDarkBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource PoEDarkBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource PoEGoldDarkBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="8"/>
     </Style>

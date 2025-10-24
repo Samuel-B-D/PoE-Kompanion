@@ -33,6 +33,10 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+#if DEBUG
+        this.AttachDevTools();
+#endif
+
         if (this.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.ShutdownMode = Avalonia.Controls.ShutdownMode.OnExplicitShutdown;

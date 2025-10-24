@@ -8,13 +8,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c9c69dd8-cc0c-4cab-8cdd-d86383ca677a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Themes/Button.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Themes/_Index.axaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Themes/FlyoutPresenter.axaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Themes/PopupRoot.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PoeKompanion/.idea/avalonia.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PoeKompanion/.idea/avalonia.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PoeKompanion/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PoeKompanion/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/App.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/App.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controls/HotkeyPickerButton.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/Controls/HotkeyPickerButton.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/App.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PoEKompanion.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PoEKompanion.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PoeKompanion.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/PoeKompanion.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Styles/PoETheme.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/Styles/PoETheme.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Themes/Button.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/Themes/Button.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Themes/_Index.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/Themes/_Index.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Views/ConfigurationWindow.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/Views/ConfigurationWindow.axaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +35,7 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/31becbea6fcc17e45b8bf8d055bbbdc0799cf5cd9a91d501ec46d4e16673894/BasicGlobalHookBase.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/361a699e458c7dd7e36f166c5bfc015c144ce804e503733b0713aaf72f7af3/Button.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/45c62c1f9af1eb2248ec17220752868b3b6728095879e849b6ea733ef7f5ff/CastHelpers.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7cd42a69b93843ada34898484a92ab55107c00/_4b3ab/IClassicDesktopStyleApplicationLifetime.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9dd2ee8eea3c89dae54b35341f5ed47091b13658c5b9c3125f92b8c3ec69c4ee/Process.NonUap.cs" root0="FORCE_HIGHLIGHTING" />

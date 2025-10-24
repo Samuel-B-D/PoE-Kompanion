@@ -13,6 +13,7 @@
    </Application.Resources>
    
    <Application.Styles>
+      <!-- <SimpleTheme /> -->
       <StyleInclude Source="/Styles/PoETheme.axaml" />
    </Application.Styles>
    

@@ -58,6 +58,6 @@ internal static class Program
             })
             .With(new SkiaOptions
             {
-                UseOpacitySaveLayer = false,
+                UseOpacitySaveLayer = true,
             });
 }

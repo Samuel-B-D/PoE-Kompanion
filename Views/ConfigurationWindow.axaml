@@ -11,6 +11,7 @@
     Title="PoE Kompanion Configuration"
     CanResize="False"
     WindowStartupLocation="CenterScreen"
+    SystemDecorations="None"
     ShowInTaskbar="True"
     Width="400"
     SizeToContent="Height"

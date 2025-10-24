@@ -94,17 +94,27 @@
         </Style>
     </UserControl.Styles>
 
-    <Button Name="PickerButton"
-            Content="{Binding #Root.KeyDisplayName}"
-            Click="OnButtonClick"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            MinWidth="150">
-        <ToolTip.Tip>
-            <ToolTip IsVisible="{Binding #Root.IsListening}"
-                     Placement="Right">
-                <TextBlock Text="Press a key or mouse button to bind it to this action (press escape to cancel)" />
-            </ToolTip>
-        </ToolTip.Tip>
-    </Button>
+    <Grid>
+        <Button Name="PickerButton"
+                Content="{Binding #Root.KeyDisplayName}"
+                Click="OnButtonClick"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                MinWidth="150"/>
+
+        <Popup Name="InstructionPopup"
+               IsOpen="{Binding #Root.IsListening}"
+               PlacementTarget="{Binding #PickerButton}"
+               Placement="Right"
+               IsLightDismissEnabled="False">
+            <Border Background="{DynamicResource PoEDarkBackgroundBrush}"
+                    BorderBrush="{DynamicResource PoEGoldDarkBrush}"
+                    BorderThickness="1"
+                    Padding="8">
+                <TextBlock Text="Press a key or mouse button to bind it to this action (press escape to cancel)"
+                           Foreground="{DynamicResource PoETextPrimaryBrush}"
+                           FontSize="12"/>
+            </Border>
+        </Popup>
+    </Grid>
 </UserControl>

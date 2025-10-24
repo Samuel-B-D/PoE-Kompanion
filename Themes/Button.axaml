@@ -4,6 +4,14 @@
     <!-- PoE Color Resources -->
     <SolidColorBrush x:Key="PoEGoldBrush">#C8A582</SolidColorBrush>
     <SolidColorBrush x:Key="PoEGoldLightBrush">#D4B896</SolidColorBrush>
+    
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="10">
+                <Button Content="Test" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
 
     <ControlTheme x:Key="{x:Type Button}" TargetType="Button">
         <Setter Property="Foreground" Value="{DynamicResource PoEGoldBrush}"/>
@@ -11,80 +19,72 @@
         <Setter Property="Padding" Value="10,0"/>
         <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="Height" Value="40"/>
+        <Setter Property="MinWidth" Value="40"/>
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="10"/>
-                    </Grid.ColumnDefinitions>
+                <Border Background="Transparent"
+                        HorizontalAlignment="Stretch"
+                        Width="{TemplateBinding Width}"
+                        MinWidth="{TemplateBinding MinWidth}">
+                    <Grid
+                        HorizontalAlignment="Stretch"
+                        ColumnDefinitions="10,*,10"
+                    >
+                        <Image Grid.Column="0" Name="PART_LeftSprite"
+                               Source="/Assets/ButtonSprites/button_normal_left.png"
+                               Stretch="Fill"
+                               IsHitTestVisible="False"
+                               RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                        <Image Grid.Column="1" Name="PART_CenterSprite"
+                               Source="/Assets/ButtonSprites/button_normal_center.png"
+                               Stretch="Fill"
+                               IsHitTestVisible="False"
+                               RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                        <Image Grid.Column="2" Name="PART_RightSprite"
+                               Source="/Assets/ButtonSprites/button_normal_right.png"
+                               Stretch="Fill"
+                               IsHitTestVisible="False"
+                               RenderOptions.BitmapInterpolationMode="HighQuality"/>
 
-                    <Image Grid.Column="0" Source="/Assets/ButtonSprites/button_normal_left.png" Stretch="Fill"/>
-                    <Image Grid.Column="1" Source="/Assets/ButtonSprites/button_normal_center.png" Stretch="Fill"/>
-                    <Image Grid.Column="2" Source="/Assets/ButtonSprites/button_normal_right.png" Stretch="Fill"/>
-
-                    <ContentPresenter Grid.Column="1"
-                                      Content="{TemplateBinding Content}"
-                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                      Padding="{TemplateBinding Padding}"/>
-                </Grid>
+                        <ContentPresenter Grid.Column="1"
+                                          Name="PART_ContentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Padding="{TemplateBinding Padding}"/>
+                    </Grid>
+                </Border>
             </ControlTemplate>
         </Setter>
 
+        <Style Selector="^:pointerover /template/ Image#PART_LeftSprite">
+            <Setter Property="Source" Value="/Assets/ButtonSprites/button_hover_left.png"/>
+        </Style>
+        <Style Selector="^:pointerover /template/ Image#PART_CenterSprite">
+            <Setter Property="Source" Value="/Assets/ButtonSprites/button_hover_center.png"/>
+        </Style>
+        <Style Selector="^:pointerover /template/ Image#PART_RightSprite">
+            <Setter Property="Source" Value="/Assets/ButtonSprites/button_hover_right.png"/>
+        </Style>
         <Style Selector="^:pointerover">
             <Setter Property="Foreground" Value="{DynamicResource PoEGoldLightBrush}"/>
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="10"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="10"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Image Grid.Column="0" Source="/Assets/ButtonSprites/button_hover_left.png" Stretch="Fill"/>
-                        <Image Grid.Column="1" Source="/Assets/ButtonSprites/button_hover_center.png" Stretch="Fill"/>
-                        <Image Grid.Column="2" Source="/Assets/ButtonSprites/button_hover_right.png" Stretch="Fill"/>
-
-                        <ContentPresenter Grid.Column="1"
-                                          Content="{TemplateBinding Content}"
-                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                          Padding="{TemplateBinding Padding}"/>
-                    </Grid>
-                </ControlTemplate>
-            </Setter>
         </Style>
 
+        <Style Selector="^.listening /template/ Image#PART_LeftSprite, ^:pressed /template/ Image#PART_LeftSprite">
+            <Setter Property="Source" Value="/Assets/ButtonSprites/button_pressed_left.png"/>
+        </Style>
+        <Style Selector="^.listening /template/ Image#PART_CenterSprite, ^:pressed /template/ Image#PART_CenterSprite">
+            <Setter Property="Source" Value="/Assets/ButtonSprites/button_pressed_center.png"/>
+        </Style>
+        <Style Selector="^.listening /template/ Image#PART_RightSprite, ^:pressed /template/ Image#PART_RightSprite">
+            <Setter Property="Source" Value="/Assets/ButtonSprites/button_pressed_right.png"/>
+        </Style>
         <Style Selector="^.listening, ^:pressed">
             <Setter Property="Foreground" Value="{DynamicResource PoEGoldLightBrush}"/>
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="10"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="10"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Image Grid.Column="0" Source="/Assets/ButtonSprites/button_pressed_left.png" Stretch="Fill"/>
-                        <Image Grid.Column="1" Source="/Assets/ButtonSprites/button_pressed_center.png" Stretch="Fill"/>
-                        <Image Grid.Column="2" Source="/Assets/ButtonSprites/button_pressed_right.png" Stretch="Fill"/>
-
-                        <ContentPresenter Grid.Column="1"
-                                          Content="{TemplateBinding Content}"
-                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                          Padding="{TemplateBinding Padding}"/>
-                    </Grid>
-                </ControlTemplate>
-            </Setter>
         </Style>
     </ControlTheme>
 </ResourceDictionary>
