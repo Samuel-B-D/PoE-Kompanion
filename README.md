@@ -3,8 +3,9 @@ A small utility for PoE on Linux, currently only containing a Logout Macro.
 Aim to be a replacement to Lutcikaur's amazing [LutBot](http://lutbot.com).
 
 ## Screenshots
-![tray-screenshot.png](tray-screenshot.png)
-![settings-screenshot.png](settings-screenshot.png)
+![tray-screenshot.png](Doc/tray-screenshot.png)
+
+![settings-screenshot.png](Doc/settings-screenshot.png)
 
 ## Command to properly build:
 ```bash

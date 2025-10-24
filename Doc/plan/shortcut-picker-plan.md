@@ -11,18 +11,19 @@ Implement a configurable hotkey system to allow users to customize the logout sh
 - **Framework**: Avalonia UI (v11.3.7) with .NET 9.0
 - **Build**: Native AOT compilation for performance
 - **Hotkey System**: SharpHook (v7.0.3) with `EventLoopGlobalHook`
-- **Current Hotkey**: `KeyCode.VcBackQuote` (hardcoded at `App.axaml.cs:16`)
+- **Current Hotkey**: Configurable via JSON configuration file
 - **Process Architecture**:
   - Main UI process with tray icon
   - Background process (started with `--bg`) that performs actual logout actions
-  - Communication via stdin/stdout using `DispatchedActions` enum
+  - Communication via Unix Domain Sockets (SOCK_DGRAM) using MessagePack-serialized messages
 
 ### Current Components
 1. **App.axaml.cs** - Main application with tray icon and global hotkey hook
-2. **App.axaml** - Tray icon definition (currently only "Exit" menu item)
+2. **App.axaml** - Tray icon definition with "Configure" and "Exit" menu items
 3. **Program.cs** - Entry point and process management
 4. **PoETracker.cs** - Background process that monitors and disconnects PoE connections
-5. **DispatchedActions.cs** - Enum for inter-process communication
+5. **UnixSocketIpc.cs** - Unix Domain Socket communication layer
+6. **IpcMessage.cs** - MessagePack-serialized message types for IPC
 
 ---
 
@@ -332,19 +333,21 @@ internal partial class ConfigJsonContext : JsonSerializerContext { }
 
 ```
 PoEKompanion/
-├── App.axaml                          [MODIFIED] Add Configure menu item
-├── App.axaml.cs                       [MODIFIED] Configuration integration
-├── Config.cs                          [NEW] Configuration model & manager
+├── App.axaml                          [COMPLETED] Configure menu item added
+├── App.axaml.cs                       [COMPLETED] Configuration integration
+├── Config.cs                          [COMPLETED] Configuration model & manager
 ├── Controls/
-│   ├── HotkeyPickerButton.axaml       [NEW] Hotkey picker control
-│   └── HotkeyPickerButton.axaml.cs    [NEW] Hotkey picker logic
+│   ├── HotkeyPickerButton.axaml       [COMPLETED] Hotkey picker control
+│   └── HotkeyPickerButton.axaml.cs    [COMPLETED] Hotkey picker logic
 ├── Views/
-│   ├── ConfigurationWindow.axaml      [NEW] Configuration window UI
-│   └── ConfigurationWindow.axaml.cs   [NEW] Configuration window logic
+│   ├── ConfigurationWindow.axaml      [COMPLETED] Configuration window UI
+│   └── ConfigurationWindow.axaml.cs   [COMPLETED] Configuration window logic
 ├── Program.cs                         [NO CHANGE]
-├── PoETracker.cs                      [NO CHANGE]
-├── DispatchedActions.cs               [NO CHANGE]
-└── PoEKompanion.csproj                [MODIFY IF NEEDED] Add JsonSerializable
+├── PoETracker.cs                      [COMPLETED] Uses UDS for IPC
+├── UnixSocketIpc.cs                   [NEW] Unix Domain Socket IPC layer
+├── IpcMessage.cs                      [NEW] MessagePack message types
+├── NotificationManager.cs             [NEW] System notification manager
+└── PoEKompanion.csproj                [COMPLETED] MessagePack dependency
 ```
 
 **Runtime Created**:

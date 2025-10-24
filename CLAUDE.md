@@ -117,6 +117,26 @@
   - Use async Stream-based APIs whenever available
 - **Parallelization**: Use parallelization when it's trivial to implement
 - **IAsyncEnumerable**: Use `IAsyncEnumerable<T>` where it makes sense for streaming data
+- **NEVER use arbitrary delays**: Do not use `Task.Delay()` or `Thread.Sleep()` with hardcoded durations as a workaround for synchronization
+  ```csharp
+  // Bad - arbitrary delay hoping something completes
+  await Task.Delay(500);
+  this.ipc = UnixSocketIpc.CreateClient();
+
+  // Good - use proper async coordination mechanisms
+  await this.serverReadyTaskCompletionSource.Task;
+  this.ipc = UnixSocketIpc.CreateClient();
+
+  // Good - wait for actual condition
+  while (!File.Exists(socketPath))
+  {
+      await Task.Yield();
+  }
+  ```
+  - Use `TaskCompletionSource<T>` for signaling between async operations
+  - Use `SemaphoreSlim` for async-compatible locking
+  - Use condition variables or polling with `Task.Yield()` if you must wait for a condition
+  - Structure your code so dependencies are explicit, not time-based
 
 ## Complete Example
 

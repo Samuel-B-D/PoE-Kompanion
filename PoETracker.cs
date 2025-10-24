@@ -18,6 +18,7 @@ internal sealed class PoETracker
 
     private Process? poeProcess;
     private readonly List<OpenedPoEConnection> openedPoEConnections = [];
+    private UnixSocketIpc? ipc;
 
     private PoETracker()
     {
@@ -33,15 +34,16 @@ internal sealed class PoETracker
 
     public async Task RunAsync()
     {
+        this.ipc = await UnixSocketIpc.CreateClientAsync();
+
         while (true)
         {
-            var c = (char)Console.Read();
-            Console.WriteLine(c);
-            await ((DispatchedActions)c switch
+            var message = await this.ipc.ReceiveAsync();
+
+            if (message is ForceLogoutMessage)
             {
-                DispatchedActions.ForceLogout => this.CloseGameConnections(),
-                _ => Task.CompletedTask,
-            });
+                await this.CloseGameConnections();
+            }
         }
         // ReSharper disable once FunctionNeverReturns
     }
@@ -51,11 +53,18 @@ internal sealed class PoETracker
         // Filter for process with PathOfExileSteam in command line
         var proc = Process.GetProcesses().FirstOrDefault(p => p.ProcessName.StartsWith("PathOfExileSte"));
 
-        if (proc == null) return;
-
-        if (this.poeProcess?.Id != proc.Id)
+        if (this.poeProcess?.Id != proc?.Id)
         {
-            Console.WriteLine($"PoE Process ID: {proc.Id}");
+            Console.WriteLine($"PoE Process ID: {proc?.Id}");
+
+            if (proc?.Id is not null)
+            {
+                this.ipc?.SendAsync(new NotificationMessage("PoE Kompanion", "Path of Exile process detected and hooked!", false));
+            }
+            else
+            {
+                this.ipc?.SendAsync(new NotificationMessage("PoE Kompanion", "Path of Exile closed", false));
+            }
         }
 
         this.poeProcess = proc;

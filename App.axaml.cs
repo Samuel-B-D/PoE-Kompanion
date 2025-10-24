@@ -23,6 +23,8 @@ public class App : Application
 
     private EventLoopGlobalHook? hook;
 
+    private UnixSocketIpc? ipc;
+
     public static App? Instance { get; private set; }
     
     public override void Initialize()
@@ -62,9 +64,33 @@ public class App : Application
     private async Task InitAsync(string backgroundProcessPath)
     {
         this.config = await ConfigurationManager.LoadAsync();
-        
+
         this.StartBackgroundProcess(backgroundProcessPath);
+        this.ipc = await UnixSocketIpc.CreateServerAsync();
         this.StartMainHook();
+        _ = this.ListenForIpcMessagesAsync();
+    }
+
+    private async Task ListenForIpcMessagesAsync()
+    {
+        if (this.ipc is null) return;
+
+        while (true)
+        {
+            var message = await this.ipc.ReceiveAsync();
+
+            if (message is NotificationMessage notification)
+            {
+                if (notification.IsError)
+                {
+                    NotificationManager.SendError(notification.Title, notification.Message);
+                }
+                else
+                {
+                    NotificationManager.SendInfo(notification.Title, notification.Message);
+                }
+            }
+        }
     }
     
     private void StartMainHook()
@@ -76,10 +102,9 @@ public class App : Application
         {
             if (args.Data.KeyCode == this.config?.LogoutHotkey)
             {
-                if (this.bgProcess is null) return;
+                if (this.ipc is null) return;
 
-                await this.bgProcess.StandardInput.WriteAsync((char)DispatchedActions.ForceLogout);
-                await this.bgProcess.StandardInput.FlushAsync();
+                await this.ipc.SendAsync(new ForceLogoutMessage());
             }
             else if (args.Data.KeyCode == this.config?.OpenSettingsHotkey)
             {
@@ -106,9 +131,6 @@ public class App : Application
                     FileName = "sudo",
                     Arguments = $"-n {path} --bg",
                     UseShellExecute = false,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
                     CreateNoWindow = true,
                 },
             };
@@ -129,9 +151,6 @@ public class App : Application
                                 FileName = "pkexec",
                                 Arguments = $"sudo {path} --bg",
                                 UseShellExecute = false,
-                                RedirectStandardInput = true,
-                                RedirectStandardOutput = false,
-                                RedirectStandardError = false,
                                 CreateNoWindow = true,
                             },
                         };
@@ -141,13 +160,21 @@ public class App : Application
 
                         if (this.bgProcess.ExitCode != 0)
                         {
-                            Environment.Exit(1);
+                            this.NotifyInitializationError();
+                        }
+                        else
+                        {
+                            this.NotifyInitializationSuccess();
                         }
                     }
                     catch (Exception)
                     {
-                        Environment.Exit(1);
+                        this.NotifyInitializationError();
                     }
+                }
+                else
+                {
+                    this.NotifyInitializationSuccess();
                 }
             });
         }
@@ -162,9 +189,6 @@ public class App : Application
                         FileName = "pkexec",
                         Arguments = $"sudo {path} --bg",
                         UseShellExecute = false,
-                        RedirectStandardInput = true,
-                        RedirectStandardOutput = false,
-                        RedirectStandardError = false,
                         CreateNoWindow = true,
                     },
                 };
@@ -176,15 +200,30 @@ public class App : Application
 
                     if (this.bgProcess.ExitCode != 0)
                     {
-                        Environment.Exit(1);
+                        this.NotifyInitializationError();
+                    }
+                    else
+                    {
+                        this.NotifyInitializationSuccess();
                     }
                 });
             }
             catch (Exception)
             {
-                Environment.Exit(1);
+                this.NotifyInitializationError();
             }
         }
+    }
+
+    private void NotifyInitializationSuccess()
+    {
+        NotificationManager.SendInfo("PoE Kompanion", "initialized successfully!");
+    }
+    
+    private void NotifyInitializationError()
+    {
+        NotificationManager.SendError("PoE Kompanion", "Failed to initialize; application will exit");
+        Environment.Exit(1);
     }
 
     private void ConfigureAction(object? sender, EventArgs e) => _ = this.OpenConfiguration();

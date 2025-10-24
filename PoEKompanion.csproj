@@ -73,11 +73,8 @@
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
+        <PackageReference Include="MessagePack" Version="3.1.4" />
         <PackageReference Include="SharpHook" Version="7.0.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Doc\" />
     </ItemGroup>
 
 </Project>
