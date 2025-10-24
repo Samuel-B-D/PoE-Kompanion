@@ -26,6 +26,9 @@
         <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
         <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
         <TrimmerRootDescriptorFiles>linker.rd.xml</TrimmerRootDescriptorFiles>
+
+        <!-- Suppress MessagePack AOT warnings - library has internal reflection but our usage is AOT-safe -->
+        <NoWarn>$(NoWarn);IL3053;IL2104</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">

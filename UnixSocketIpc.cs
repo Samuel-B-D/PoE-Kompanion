@@ -33,11 +33,14 @@ public sealed class UnixSocketIpc : IDisposable
         var socket = new Socket(AddressFamily.Unix, SocketType.Dgram, ProtocolType.Unspecified);
         socket.Bind(new UnixDomainSocketEndPoint(SERVER_SOCKET_PATH));
 
-        // ReSharper disable once UseObjectOrCollectionInitializer
-        var serverSocketInfo = new FileInfo(SERVER_SOCKET_PATH);
-        serverSocketInfo.UnixFileMode = UnixFileMode.UserRead | UnixFileMode.UserWrite |
-                                        UnixFileMode.GroupRead | UnixFileMode.GroupWrite |
-                                        UnixFileMode.OtherRead | UnixFileMode.OtherWrite;
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
+        {
+            // ReSharper disable once UseObjectOrCollectionInitializer
+            var serverSocketInfo = new FileInfo(SERVER_SOCKET_PATH);
+            serverSocketInfo.UnixFileMode = UnixFileMode.UserRead | UnixFileMode.UserWrite |
+                                            UnixFileMode.GroupRead | UnixFileMode.GroupWrite |
+                                            UnixFileMode.OtherRead | UnixFileMode.OtherWrite;
+        }
 
         while (!File.Exists(CLIENT_SOCKET_PATH))
         {
@@ -58,11 +61,14 @@ public sealed class UnixSocketIpc : IDisposable
         var socket = new Socket(AddressFamily.Unix, SocketType.Dgram, ProtocolType.Unspecified);
         socket.Bind(new UnixDomainSocketEndPoint(CLIENT_SOCKET_PATH));
 
-        // ReSharper disable once UseObjectOrCollectionInitializer
-        var clientSocketInfo = new FileInfo(CLIENT_SOCKET_PATH);
-        clientSocketInfo.UnixFileMode = UnixFileMode.UserRead | UnixFileMode.UserWrite |
-                                        UnixFileMode.GroupRead | UnixFileMode.GroupWrite |
-                                        UnixFileMode.OtherRead | UnixFileMode.OtherWrite;
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
+        {
+            // ReSharper disable once UseObjectOrCollectionInitializer
+            var clientSocketInfo = new FileInfo(CLIENT_SOCKET_PATH);
+            clientSocketInfo.UnixFileMode = UnixFileMode.UserRead | UnixFileMode.UserWrite |
+                                            UnixFileMode.GroupRead | UnixFileMode.GroupWrite |
+                                            UnixFileMode.OtherRead | UnixFileMode.OtherWrite;
+        }
 
         while (!File.Exists(SERVER_SOCKET_PATH))
         {
