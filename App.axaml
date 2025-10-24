@@ -4,6 +4,18 @@
    x:Class="PoEKompanion.App"
    RequestedThemeVariant="Default"
 >
+   <Application.Resources>
+      <ResourceDictionary>
+         <ResourceDictionary.MergedDictionaries>
+            <MergeResourceInclude Source="Themes/_Index.axaml" />
+         </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+   </Application.Resources>
+   
+   <Application.Styles>
+      <StyleInclude Source="/Styles/PoETheme.axaml" />
+   </Application.Styles>
+   
    <TrayIcon.Icons>
       <TrayIcons>
          <TrayIcon Icon="/Assets/poe-kompanion.ico" 

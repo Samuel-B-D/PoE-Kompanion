@@ -1,0 +1,90 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- PoE Color Resources -->
+    <SolidColorBrush x:Key="PoEGoldBrush">#C8A582</SolidColorBrush>
+    <SolidColorBrush x:Key="PoEGoldLightBrush">#D4B896</SolidColorBrush>
+
+    <ControlTheme x:Key="{x:Type Button}" TargetType="Button">
+        <Setter Property="Foreground" Value="{DynamicResource PoEGoldBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="10,0"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Image Grid.Column="0" Source="/Assets/ButtonSprites/button_normal_left.png" Stretch="Fill"/>
+                    <Image Grid.Column="1" Source="/Assets/ButtonSprites/button_normal_center.png" Stretch="Fill"/>
+                    <Image Grid.Column="2" Source="/Assets/ButtonSprites/button_normal_right.png" Stretch="Fill"/>
+
+                    <ContentPresenter Grid.Column="1"
+                                      Content="{TemplateBinding Content}"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      Padding="{TemplateBinding Padding}"/>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Foreground" Value="{DynamicResource PoEGoldLightBrush}"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Grid.Column="0" Source="/Assets/ButtonSprites/button_hover_left.png" Stretch="Fill"/>
+                        <Image Grid.Column="1" Source="/Assets/ButtonSprites/button_hover_center.png" Stretch="Fill"/>
+                        <Image Grid.Column="2" Source="/Assets/ButtonSprites/button_hover_right.png" Stretch="Fill"/>
+
+                        <ContentPresenter Grid.Column="1"
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Padding="{TemplateBinding Padding}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="^.listening, ^:pressed">
+            <Setter Property="Foreground" Value="{DynamicResource PoEGoldLightBrush}"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Grid.Column="0" Source="/Assets/ButtonSprites/button_pressed_left.png" Stretch="Fill"/>
+                        <Image Grid.Column="1" Source="/Assets/ButtonSprites/button_pressed_center.png" Stretch="Fill"/>
+                        <Image Grid.Column="2" Source="/Assets/ButtonSprites/button_pressed_right.png" Stretch="Fill"/>
+
+                        <ContentPresenter Grid.Column="1"
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Padding="{TemplateBinding Padding}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

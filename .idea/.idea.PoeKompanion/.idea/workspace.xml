@@ -8,13 +8,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c9c69dd8-cc0c-4cab-8cdd-d86383ca677a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Themes/Button.axaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Themes/_Index.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PoeKompanion/.idea/avalonia.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PoeKompanion/.idea/avalonia.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PoeKompanion/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PoeKompanion/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/App.axaml.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Config.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Styles/PoETheme.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/Styles/PoETheme.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/ConfigurationWindow.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/Views/ConfigurationWindow.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/ConfigurationWindow.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Views/ConfigurationWindow.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/App.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controls/HotkeyPickerButton.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/Controls/HotkeyPickerButton.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PoEKompanion.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PoEKompanion.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,10 +33,13 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7cd42a69b93843ada34898484a92ab55107c00/_4b3ab/IClassicDesktopStyleApplicationLifetime.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9dd2ee8eea3c89dae54b35341f5ed47091b13658c5b9c3125f92b8c3ec69c4ee/Process.NonUap.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/App.axaml.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/App.axaml.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/Controls/HotkeyPickerButton.axaml" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/Controls/HotkeyPickerButton.axaml" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/Controls/HotkeyPickerButton.axaml.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/Controls/HotkeyPickerButton.axaml.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/Controls/HotkeyPickerButton.axaml.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/Styles/PoETheme.axaml" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/Views/ConfigurationWindow.axaml" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/Views/ConfigurationWindow.axaml.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/Views/ConfigurationWindow.axaml.cs" root0="SKIP_HIGHLIGHTING" />
@@ -47,27 +50,30 @@
   &quot;associatedIndex&quot;: 8
 }</component>
   <component name="ProjectId" id="34UdkEh8chadGHAMxBbb6LBI7oP" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Project.PoEKompanion.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "full.screen.before.presentation.mode": "false",
-    "git-widget-placeholder": "master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Project.PoEKompanion.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;full.screen.before.presentation.mode&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="PoEKompanion" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="$PROJECT_DIR$/bin/Debug/net9.0/linux-x64/PoEKompanion" />

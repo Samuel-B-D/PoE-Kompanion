@@ -58,7 +58,9 @@
 
     <ItemGroup>
         <AvaloniaResource Include="Assets/**/*.ico" />
+        <AvaloniaResource Include="Assets/**/*.png" />
         <AvaloniaResource Include="Styles/**/*.axaml" />
+        <AvaloniaResource Include="Themes/**/*.axaml" />
     </ItemGroup>
 
     <ItemGroup>

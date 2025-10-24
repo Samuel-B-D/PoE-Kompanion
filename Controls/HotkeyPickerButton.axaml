@@ -9,43 +9,97 @@
              x:Name="Root">
 
     <UserControl.Styles>
-        <StyleInclude Source="/Styles/PoETheme.axaml"/>
-
-        <!-- Custom style for the picker button -->
+        <!-- Custom style for the picker button with 3-part sprite system -->
         <Style Selector="Button.PoEPickerButton">
-            <Setter Property="Background" Value="{StaticResource PoEButtonGradient}"/>
             <Setter Property="Foreground" Value="{StaticResource PoEGoldBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource PoEOrangeBrush}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="10,0"/>
             <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Height" Value="40"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Grid.Column="0" Source="/Assets/ButtonSprites/button_normal_left.png" Stretch="Fill"/>
+                        <Image Grid.Column="1" Source="/Assets/ButtonSprites/button_normal_center.png" Stretch="Fill"/>
+                        <Image Grid.Column="2" Source="/Assets/ButtonSprites/button_normal_right.png" Stretch="Fill"/>
+
+                        <ContentPresenter Grid.Column="1"
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Padding="{TemplateBinding Padding}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
         </Style>
 
         <Style Selector="Button.PoEPickerButton:pointerover">
-            <Setter Property="Background" Value="{StaticResource PoEButtonHoverGradient}"/>
             <Setter Property="Foreground" Value="{StaticResource PoEGoldLightBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource PoEOrangeLightBrush}"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Grid.Column="0" Source="/Assets/ButtonSprites/button_hover_left.png" Stretch="Fill"/>
+                        <Image Grid.Column="1" Source="/Assets/ButtonSprites/button_hover_center.png" Stretch="Fill"/>
+                        <Image Grid.Column="2" Source="/Assets/ButtonSprites/button_hover_right.png" Stretch="Fill"/>
+
+                        <ContentPresenter Grid.Column="1"
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Padding="{TemplateBinding Padding}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
         </Style>
 
         <Style Selector="Button.PoEPickerButton.listening">
-            <Setter Property="Background" Value="{StaticResource PoEButtonPressedGradient}"/>
             <Setter Property="Foreground" Value="{StaticResource PoEGoldLightBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource PoEOrangeLightBrush}"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Grid.Column="0" Source="/Assets/ButtonSprites/button_pressed_left.png" Stretch="Fill"/>
+                        <Image Grid.Column="1" Source="/Assets/ButtonSprites/button_pressed_center.png" Stretch="Fill"/>
+                        <Image Grid.Column="2" Source="/Assets/ButtonSprites/button_pressed_right.png" Stretch="Fill"/>
+
+                        <ContentPresenter Grid.Column="1"
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Padding="{TemplateBinding Padding}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
         </Style>
     </UserControl.Styles>
 
     <Button Name="PickerButton"
             Content="{Binding #Root.KeyDisplayName}"
-            Classes="PoEPickerButton"
             Click="OnButtonClick"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            MinWidth="150"
-            Height="30">
+            MinWidth="150">
         <ToolTip.Tip>
             <ToolTip IsVisible="{Binding #Root.IsListening}"
                      Placement="Right">
