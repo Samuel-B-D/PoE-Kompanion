@@ -97,20 +97,94 @@ public class App : Application
 
     private void StartBackgroundProcess(string path)
     {
-        this.bgProcess = new Process
+        try
         {
-            StartInfo = new ProcessStartInfo
+            this.bgProcess = new Process
             {
-                FileName = "pkexec",
-                Arguments = $"sudo {path} --bg",
-                UseShellExecute = false,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = false,
-                RedirectStandardError = false,
-                CreateNoWindow = true,
-            },
-        };
-        this.bgProcess.Start();
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "sudo",
+                    Arguments = $"-n {path} --bg",
+                    UseShellExecute = false,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true,
+                },
+            };
+            this.bgProcess.Start();
+
+            _ = Task.Run(() =>
+            {
+                this.bgProcess.WaitForExit();
+
+                if (this.bgProcess.ExitCode != 0)
+                {
+                    try
+                    {
+                        this.bgProcess = new Process
+                        {
+                            StartInfo = new ProcessStartInfo
+                            {
+                                FileName = "pkexec",
+                                Arguments = $"sudo {path} --bg",
+                                UseShellExecute = false,
+                                RedirectStandardInput = true,
+                                RedirectStandardOutput = false,
+                                RedirectStandardError = false,
+                                CreateNoWindow = true,
+                            },
+                        };
+                        this.bgProcess.Start();
+
+                        this.bgProcess.WaitForExit();
+
+                        if (this.bgProcess.ExitCode != 0)
+                        {
+                            Environment.Exit(1);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        Environment.Exit(1);
+                    }
+                }
+            });
+        }
+        catch (Exception)
+        {
+            try
+            {
+                this.bgProcess = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "pkexec",
+                        Arguments = $"sudo {path} --bg",
+                        UseShellExecute = false,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = false,
+                        RedirectStandardError = false,
+                        CreateNoWindow = true,
+                    },
+                };
+                this.bgProcess.Start();
+
+                _ = Task.Run(() =>
+                {
+                    this.bgProcess.WaitForExit();
+
+                    if (this.bgProcess.ExitCode != 0)
+                    {
+                        Environment.Exit(1);
+                    }
+                });
+            }
+            catch (Exception)
+            {
+                Environment.Exit(1);
+            }
+        }
     }
 
     private void ConfigureAction(object? sender, EventArgs e) => _ = this.OpenConfiguration();
