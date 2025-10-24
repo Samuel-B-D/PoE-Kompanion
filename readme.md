@@ -1,9 +1,12 @@
-﻿## Command to properly build:
+﻿# PoE Kompanion
+A small utility for PoE on Linux, currently only containing a Logout Macro.
+Aim to be a replacement to Lutcikaur's amazing [LutBot](http://lutbot.com).
+
+## Screenshots
+![tray-screenshot.png](tray-screenshot.png)
+![settings-screenshot.png](settings-screenshot.png)
+
+## Command to properly build:
 ```bash
 dotnet publish -r linux-x64 -p:PublishAot=true -c Release
-```
-
-or, without AoT:
-```bash
-dotnet publish -r linux-x64 --self-contained=true -p:PublishReadyToRun=true -c Release
 ```
