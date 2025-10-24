@@ -1,5 +1,11 @@
 # Code Guidelines for PoEKompanion
 
+## Git Workflow
+
+- **Local commits allowed**: Create commits, branches, merges, etc. as needed
+- **NEVER push**: Do not push to remote repositories under any circumstances
+- The user handles all remote operations manually
+
 ## General Style
 
 - **Prefer `var`**: Use `var` for local variable declarations instead of explicit types
