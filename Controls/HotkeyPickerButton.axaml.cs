@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using SharpHook;
 using SharpHook.Data;
 
@@ -14,7 +15,7 @@ public partial class HotkeyPickerButton : UserControl, INotifyPropertyChanged
 {
     private KeyCode _selectedKeyCode = KeyCode.VcBackQuote;
     private bool _isListening;
-    private EventLoopGlobalHook? _captureHook;
+    private SimpleGlobalHook? _captureHook;
 
     public new event PropertyChangedEventHandler? PropertyChanged;
 
@@ -66,38 +67,41 @@ public partial class HotkeyPickerButton : UserControl, INotifyPropertyChanged
     {
         try
         {
-            _captureHook = new EventLoopGlobalHook();
+            _captureHook = new SimpleGlobalHook();
 
-            _captureHook.KeyPressed += (_, args) =>
+            _captureHook.KeyPressed += async (_, args) =>
             {
                 var keyCode = args.Data.KeyCode;
 
                 if (keyCode == KeyCode.VcEscape)
                 {
-                    StopKeyCapture();
+                    await Dispatcher.UIThread.InvokeAsync(async () => await StopKeyCaptureAsync());
                     return;
                 }
 
-                SelectedKeyCode = keyCode;
-                StopKeyCapture();
+                await Dispatcher.UIThread.InvokeAsync(() => SelectedKeyCode = keyCode);
+                await Dispatcher.UIThread.InvokeAsync(async () => await StopKeyCaptureAsync());
             };
 
-            await Task.Run(() => _captureHook.RunAsync());
+            await Task.Run(() => _captureHook.Run());
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error during key capture: {ex.Message}");
-            StopKeyCapture();
+            await StopKeyCaptureAsync();
         }
     }
 
-    private void StopKeyCapture()
+    private async Task StopKeyCaptureAsync()
     {
         if (_captureHook is null) return;
 
-        _captureHook.Dispose();
+        var hookToDispose = _captureHook;
         _captureHook = null;
-        IsListening = false;
+
+        await Task.Run(() => hookToDispose.Dispose());
+
+        await Dispatcher.UIThread.InvokeAsync(() => IsListening = false);
     }
 
     private static string FormatKeyName(KeyCode keyCode)

@@ -14,12 +14,25 @@
 ## General Style
 
 - **Prefer `var`**: Use `var` for local variable declarations instead of explicit types
-- **Guard statements**: Single-line conditions that return should be on one line without curly braces
+- **Curly braces**:
+  - **Always use curly braces** for all conditional statements and loops, except for single-line guard statements
+  - **Guard statements exception**: Single-line conditions that return/throw should be on one line without curly braces
   ```csharp
-  // Good
+  // Good - guard statement
   if (value is null) return;
+  if (count < 0) throw new ArgumentException();
 
-  // Bad
+  // Good - regular conditional with braces
+  if (oldHook is not null)
+  {
+      await Task.Run(() => oldHook.Dispose());
+  }
+
+  // Bad - multi-statement without braces
+  if (oldHook is not null)
+      await Task.Run(() => oldHook.Dispose());
+
+  // Bad - guard with braces
   if (value is null)
   {
       return;

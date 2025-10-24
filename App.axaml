@@ -10,6 +10,7 @@
                    ToolTipText="PoE Kompanion">
             <TrayIcon.Menu>
                <NativeMenu>
+                  <NativeMenuItem Header="Configure" Click="ConfigureAction" />
                   <NativeMenuItem Header="Exit" Click="ExitAction" />
                </NativeMenu>
             </TrayIcon.Menu>

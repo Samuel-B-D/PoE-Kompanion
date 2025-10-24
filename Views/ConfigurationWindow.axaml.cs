@@ -24,6 +24,8 @@ public partial class ConfigurationWindow : Window
 
         _currentConfig = new ConfigurationModel();
         LoadConfiguration();
+
+        Opened += async (_, _) => await App.Instance?.SuspendMainHookAsync()!;
     }
 
     private void InitializeComponent()
