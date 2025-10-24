@@ -1,0 +1,113 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Styles.Resources>
+        <!-- PoE Color Palette -->
+        <Color x:Key="PoEDarkBackground">#1A1410</Color>
+    <Color x:Key="PoEPanelBackground">#2B2218</Color>
+    <Color x:Key="PoEBorderDark">#3D2F1F</Color>
+    <Color x:Key="PoEBorderLight">#5A4A3A</Color>
+    <Color x:Key="PoEGold">#C8A582</Color>
+    <Color x:Key="PoEGoldLight">#D4B896</Color>
+    <Color x:Key="PoEGoldDark">#9C8366</Color>
+    <Color x:Key="PoEOrange">#AF6025</Color>
+    <Color x:Key="PoEOrangeLight">#C77A3A</Color>
+    <Color x:Key="PoEButtonBg">#4A3526</Color>
+    <Color x:Key="PoEButtonHover">#5C4532</Color>
+    <Color x:Key="PoEButtonPressed">#2F221A</Color>
+    <Color x:Key="PoETextPrimary">#C8A582</Color>
+    <Color x:Key="PoETextSecondary">#8B7355</Color>
+
+    <!-- Solid Color Brushes -->
+    <SolidColorBrush x:Key="PoEDarkBackgroundBrush" Color="{StaticResource PoEDarkBackground}"/>
+    <SolidColorBrush x:Key="PoEPanelBackgroundBrush" Color="{StaticResource PoEPanelBackground}"/>
+    <SolidColorBrush x:Key="PoEBorderDarkBrush" Color="{StaticResource PoEBorderDark}"/>
+    <SolidColorBrush x:Key="PoEBorderLightBrush" Color="{StaticResource PoEBorderLight}"/>
+    <SolidColorBrush x:Key="PoEGoldBrush" Color="{StaticResource PoEGold}"/>
+    <SolidColorBrush x:Key="PoEGoldLightBrush" Color="{StaticResource PoEGoldLight}"/>
+    <SolidColorBrush x:Key="PoEGoldDarkBrush" Color="{StaticResource PoEGoldDark}"/>
+    <SolidColorBrush x:Key="PoEOrangeBrush" Color="{StaticResource PoEOrange}"/>
+    <SolidColorBrush x:Key="PoEOrangeLightBrush" Color="{StaticResource PoEOrangeLight}"/>
+    <SolidColorBrush x:Key="PoEButtonBgBrush" Color="{StaticResource PoEButtonBg}"/>
+    <SolidColorBrush x:Key="PoEButtonHoverBrush" Color="{StaticResource PoEButtonHover}"/>
+    <SolidColorBrush x:Key="PoEButtonPressedBrush" Color="{StaticResource PoEButtonPressed}"/>
+    <SolidColorBrush x:Key="PoETextPrimaryBrush" Color="{StaticResource PoETextPrimary}"/>
+    <SolidColorBrush x:Key="PoETextSecondaryBrush" Color="{StaticResource PoETextSecondary}"/>
+
+        <!-- Gradient Brushes for Buttons -->
+    <LinearGradientBrush x:Key="PoEButtonGradient" StartPoint="0%,0%" EndPoint="0%,100%">
+        <GradientStop Color="#5A4A3A" Offset="0"/>
+        <GradientStop Color="#4A3526" Offset="0.5"/>
+        <GradientStop Color="#3A2A1F" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="PoEButtonHoverGradient" StartPoint="0%,0%" EndPoint="0%,100%">
+        <GradientStop Color="#6A5A4A" Offset="0"/>
+        <GradientStop Color="#5C4532" Offset="0.5"/>
+        <GradientStop Color="#4A3526" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="PoEButtonPressedGradient" StartPoint="0%,0%" EndPoint="0%,100%">
+        <GradientStop Color="#2F221A" Offset="0"/>
+        <GradientStop Color="#3A2A1F" Offset="0.5"/>
+        <GradientStop Color="#2F221A" Offset="1"/>
+    </LinearGradientBrush>
+    </Styles.Resources>
+
+    <!-- PoE Window Style -->
+    <Style Selector="Window.PoEStyle">
+        <Setter Property="Background" Value="{StaticResource PoEDarkBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource PoEGoldDarkBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+    <!-- PoE Button Style -->
+    <Style Selector="Button.PoEButton">
+        <Setter Property="Background" Value="{StaticResource PoEButtonGradient}"/>
+        <Setter Property="Foreground" Value="{StaticResource PoEGoldBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource PoEOrangeBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="12,6"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <Style Selector="Button.PoEButton:pointerover">
+        <Setter Property="Background" Value="{StaticResource PoEButtonHoverGradient}"/>
+        <Setter Property="Foreground" Value="{StaticResource PoEGoldLightBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource PoEOrangeLightBrush}"/>
+    </Style>
+
+    <Style Selector="Button.PoEButton:pressed">
+        <Setter Property="Background" Value="{StaticResource PoEButtonPressedGradient}"/>
+        <Setter Property="Foreground" Value="{StaticResource PoEGoldDarkBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource PoEOrangeBrush}"/>
+    </Style>
+
+    <!-- PoE TextBlock Style -->
+    <Style Selector="TextBlock.PoELabel">
+        <Setter Property="Foreground" Value="{StaticResource PoEGoldBrush}"/>
+        <Setter Property="FontSize" Value="13"/>
+    </Style>
+
+    <Style Selector="TextBlock.PoEHeading">
+        <Setter Property="Foreground" Value="{StaticResource PoEOrangeBrush}"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+
+    <!-- PoE ToolTip Style -->
+    <Style Selector="ToolTip">
+        <Setter Property="Background" Value="{StaticResource PoEDarkBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource PoEGoldDarkBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="8"/>
+    </Style>
+
+    <Style Selector="ToolTip TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource PoETextPrimaryBrush}"/>
+        <Setter Property="FontSize" Value="12"/>
+    </Style>
+
+</Styles>

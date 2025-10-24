@@ -7,8 +7,40 @@
              x:Class="PoEKompanion.Controls.HotkeyPickerButton"
              x:DataType="controls:HotkeyPickerButton"
              x:Name="Root">
+
+    <UserControl.Styles>
+        <StyleInclude Source="/Styles/PoETheme.axaml"/>
+
+        <!-- Custom style for the picker button -->
+        <Style Selector="Button.PoEPickerButton">
+            <Setter Property="Background" Value="{StaticResource PoEButtonGradient}"/>
+            <Setter Property="Foreground" Value="{StaticResource PoEGoldBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PoEOrangeBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Button.PoEPickerButton:pointerover">
+            <Setter Property="Background" Value="{StaticResource PoEButtonHoverGradient}"/>
+            <Setter Property="Foreground" Value="{StaticResource PoEGoldLightBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PoEOrangeLightBrush}"/>
+        </Style>
+
+        <Style Selector="Button.PoEPickerButton.listening">
+            <Setter Property="Background" Value="{StaticResource PoEButtonPressedGradient}"/>
+            <Setter Property="Foreground" Value="{StaticResource PoEGoldLightBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PoEOrangeLightBrush}"/>
+        </Style>
+    </UserControl.Styles>
+
     <Button Name="PickerButton"
             Content="{Binding #Root.KeyDisplayName}"
+            Classes="PoEPickerButton"
             Click="OnButtonClick"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"

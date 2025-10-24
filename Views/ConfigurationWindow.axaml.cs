@@ -61,6 +61,7 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
         catch (Exception ex)
         {
             Console.WriteLine($"Error saving configuration: {ex.Message}");
+            // TODO: Show user-friendly error dialog in Phase 5 with styled UI
         }
     }
 

@@ -48,6 +48,21 @@ public partial class HotkeyPickerButton : UserControl, INotifyPropertyChanged
             if (this.isListening == value) return;
             this.isListening = value;
             this.OnPropertyChanged();
+            this.UpdateButtonStyle();
+        }
+    }
+
+    private void UpdateButtonStyle()
+    {
+        if (this.pickerButton is null) return;
+
+        if (this.isListening)
+        {
+            this.pickerButton.Classes.Add("listening");
+        }
+        else
+        {
+            this.pickerButton.Classes.Remove("listening");
         }
     }
 
@@ -61,7 +76,10 @@ public partial class HotkeyPickerButton : UserControl, INotifyPropertyChanged
     private void InitializeComponent()
     {
         AvaloniaXamlLoader.Load(this);
+        this.pickerButton = this.FindControl<Button>("PickerButton") ?? throw new InvalidOperationException("PickerButton not found");
     }
+
+    private Button? pickerButton;
 
     private void OnButtonClick(object? sender, RoutedEventArgs e) => _ = this.StartListening();
 
