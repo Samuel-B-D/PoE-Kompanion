@@ -20,8 +20,6 @@
         <IlcGenerateMstatFile>true</IlcGenerateMstatFile>
         <StripSymbols>false</StripSymbols>
 
-<!--        <StripSymbols>true</StripSymbols>-->
-
         <TrimMode>link</TrimMode>
         <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
         <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
@@ -62,6 +60,7 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets/**/*.ico" />
         <AvaloniaResource Include="Assets/**/*.png" />
+        <AvaloniaResource Include="Assets/**/*.ttf" />
         <AvaloniaResource Include="Styles/**/*.axaml" />
         <AvaloniaResource Include="Themes/**/*.axaml" />
     </ItemGroup>
@@ -69,21 +68,15 @@
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.3.7" />
         <PackageReference Include="Avalonia.Desktop" Version="11.3.7" />
-<!--        <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.7" />-->
 
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Include="Avalonia.Diagnostics" Version="11.3.7">
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
+
         <PackageReference Include="MessagePack" Version="3.1.4" />
         <PackageReference Include="SharpHook" Version="7.0.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Views\InputBlockerOverlay.axaml.cs">
-        <DependentUpon>InputBlockerOverlay.axaml</DependentUpon>
-      </Compile>
     </ItemGroup>
 
 </Project>

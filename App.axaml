@@ -6,6 +6,7 @@
 >
    <Application.Resources>
       <ResourceDictionary>
+         <FontFamily x:Key="FrizQuadrata">avares://PoEKompanion/Assets/Fonts#FrizQuadrataITC</FontFamily>
          <ResourceDictionary.MergedDictionaries>
             <MergeResourceInclude Source="ControlThemes/_Index.axaml" />
          </ResourceDictionary.MergedDictionaries>
@@ -13,7 +14,6 @@
    </Application.Resources>
    
    <Application.Styles>
-      <!-- <SimpleTheme /> -->
       <StyleInclude Source="/Styles/PoETheme.axaml" />
    </Application.Styles>
    

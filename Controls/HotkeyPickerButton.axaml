@@ -112,7 +112,7 @@
                     Padding="8">
                 <TextBlock Text="&lt;— Press a key or mouse button to bind it to this action (press escape to cancel)"
                            Foreground="{DynamicResource PoETextPrimaryBrush}"
-                           FontSize="14"
+                           FontSize="16"
                            FontWeight="550"
                            FontStyle="Italic" />
             </Border>

@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:PoEKompanion.Controls">
 
     <Styles.Resources>
         <!-- PoE Color Palette -->
@@ -57,6 +58,11 @@
         </LinearGradientBrush>
     </Styles.Resources>
 
+    <!-- Global Font Family -->
+    <Style Selector=":is(Control)">
+        <Setter Property="TextElement.FontFamily" Value="{StaticResource FrizQuadrata}"/>
+    </Style>
+
     <!-- PoE Window Style -->
     <Style Selector="Window">
         <Setter Property="Background" Value="{StaticResource PoEDarkBackgroundBrush}"/>
@@ -91,7 +97,7 @@
     <!-- PoE TextBlock Style -->
     <Style Selector="Label">
         <Setter Property="Foreground" Value="{StaticResource PoETextLabelColor}" />
-        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontSize" Value="18" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
@@ -104,7 +110,13 @@
     
     <Style Selector="Button TextBlock">
         <Setter Property="Effect">
-            <DropShadowEffect BlurRadius="4" Color="#d95f06" OffsetX="0" OffsetY="0" Opacity="1" />
+            <DropShadowEffect BlurRadius="2" Color="#d95f06" OffsetX="0" OffsetY="0" Opacity="0.8" />
+        </Setter>
+    </Style>
+    <Style Selector="controls|HotkeyPickerButton TextBlock">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Effect">
+            <DropShadowEffect BlurRadius="1" Color="Black" OffsetX="0" OffsetY="0" Opacity="1" />
         </Setter>
     </Style>
 
