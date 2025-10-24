@@ -76,4 +76,8 @@
         <PackageReference Include="SharpHook" Version="7.0.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Doc\" />
+    </ItemGroup>
+
 </Project>
