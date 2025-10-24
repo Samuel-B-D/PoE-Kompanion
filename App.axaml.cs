@@ -24,6 +24,8 @@ public class App : Application
 
     private UnixSocketIpc? ipc;
 
+    private bool isShuttingDown;
+
     public static App? Instance { get; private set; }
     
     public override void Initialize()
@@ -139,6 +141,8 @@ public class App : Application
             {
                 this.bgProcess.WaitForExit();
 
+                if (this.isShuttingDown) return;
+
                 if (this.bgProcess.ExitCode != 0)
                 {
                     try
@@ -157,6 +161,8 @@ public class App : Application
 
                         this.bgProcess.WaitForExit();
 
+                        if (this.isShuttingDown) return;
+
                         if (this.bgProcess.ExitCode != 0)
                         {
                             NotifyInitializationError();
@@ -168,6 +174,7 @@ public class App : Application
                     }
                     catch (Exception)
                     {
+                        if (this.isShuttingDown) return;
                         NotifyInitializationError();
                     }
                 }
@@ -197,6 +204,8 @@ public class App : Application
                 {
                     this.bgProcess.WaitForExit();
 
+                    if (this.isShuttingDown) return;
+
                     if (this.bgProcess.ExitCode != 0)
                     {
                         NotifyInitializationError();
@@ -209,6 +218,7 @@ public class App : Application
             }
             catch (Exception)
             {
+                if (this.isShuttingDown) return;
                 NotifyInitializationError();
             }
         }
@@ -243,6 +253,8 @@ public class App : Application
 
     private void ExitAction(object? sender, EventArgs e)
     {
+        this.isShuttingDown = true;
+
         this.hook?.Dispose();
         this.hook = null;
 
