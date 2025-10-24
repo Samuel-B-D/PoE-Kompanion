@@ -4,9 +4,9 @@
     <Styles.Resources>
         <!-- PoE Color Palette -->
         <Color x:Key="PoEDarkBackground">#1A1410</Color>
-        <Color x:Key="PoEPanelBackground">#2B2218</Color>
+        <Color x:Key="PoEPanelBackground">#181411</Color>
         <Color x:Key="PoEBorderDark">#3D2F1F</Color>
-        <Color x:Key="PoEBorderLight">#5A4A3A</Color>
+        <Color x:Key="PoEBorderLight">#5c391e</Color>
         <Color x:Key="PoEGold">#C8A582</Color>
         <Color x:Key="PoEGoldLight">#D4B896</Color>
         <Color x:Key="PoEGoldDark">#9C8366</Color>
@@ -17,6 +17,9 @@
         <Color x:Key="PoEButtonPressed">#2F221A</Color>
         <Color x:Key="PoETextPrimary">#C8A582</Color>
         <Color x:Key="PoETextSecondary">#8B7355</Color>
+        <Color x:Key="PoETextTitleColor">#e9b373</Color>
+        <Color x:Key="PoETextLabelColor">#885400</Color>
+        <Color x:Key="PoETextButtonColor">#ffbf71</Color>
 
         <!-- Solid Color Brushes -->
         <SolidColorBrush x:Key="PoEDarkBackgroundBrush" Color="{StaticResource PoEDarkBackground}"/>
@@ -87,15 +90,29 @@
 
     <!-- PoE TextBlock Style -->
     <Style Selector="Label">
-        <Setter Property="Foreground" Value="{StaticResource PoEGoldBrush}" />
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource PoETextLabelColor}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
+    <Style Selector="Label :is(TextBlock)">
+        <Setter Property="Effect">
+            <DropShadowEffect BlurRadius="1" Color="Black" OffsetX="0" OffsetY="0" Opacity="1" />
+        </Setter>
+    </Style>
+    
+    <Style Selector="Button TextBlock">
+        <Setter Property="Effect">
+            <DropShadowEffect BlurRadius="4" Color="#d95f06" OffsetX="0" OffsetY="0" Opacity="1" />
+        </Setter>
+    </Style>
+
     <Style Selector="TextBlock.PoEHeading">
-        <Setter Property="Foreground" Value="{StaticResource PoEOrangeBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource PoETextTitleColor}"/>
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="LetterSpacing" Value="1"/>
     </Style>
 
     <!-- PoE ToolTip Style -->

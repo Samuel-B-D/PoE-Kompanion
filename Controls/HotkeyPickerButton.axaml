@@ -106,14 +106,15 @@
                IsOpen="{Binding #Root.IsListening}"
                PlacementTarget="{Binding #PickerButton}"
                Placement="Right"
+               HorizontalOffset="-1"
                IsLightDismissEnabled="False">
             <Border Background="{DynamicResource PoEDarkBackgroundBrush}"
-                    BorderBrush="{DynamicResource PoEGoldDarkBrush}"
-                    BorderThickness="1"
                     Padding="8">
-                <TextBlock Text="Press a key or mouse button to bind it to this action (press escape to cancel)"
+                <TextBlock Text="&lt;— Press a key or mouse button to bind it to this action (press escape to cancel)"
                            Foreground="{DynamicResource PoETextPrimaryBrush}"
-                           FontSize="12"/>
+                           FontSize="14"
+                           FontWeight="550"
+                           FontStyle="Italic" />
             </Border>
         </Popup>
     </Grid>

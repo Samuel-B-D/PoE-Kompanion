@@ -26,7 +26,11 @@
             BorderThickness="2"
             Padding="20">
         <DockPanel>
-            <TextBlock DockPanel.Dock="Top" Text="Hotkeys" Classes="PoEHeading" />
+            <TextBlock DockPanel.Dock="Top"
+                       Text="HOTKEYS"
+                       Classes="PoEHeading"
+                       HorizontalAlignment="Left"
+                       Margin="10,0,0,15" />
             <Grid DockPanel.Dock="Bottom"
                   ColumnDefinitions="*,*"
                   HorizontalAlignment="Stretch"
@@ -38,8 +42,8 @@
                         Margin="0,0,5,0"
                         Height="35" />
                 <Button Grid.Column="1" 
-                        Content="CLOSE"
                         Click="OnCancelClick"
+                        Content="CLOSE"
                         HorizontalAlignment="Stretch"
                         Margin="5,0,0,0"
                         Height="35" />
