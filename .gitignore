@@ -55,3 +55,4 @@ nunit-*.xml
 
 # JetBrains
 .idea
+*.DotSettings.user
