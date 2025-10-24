@@ -10,7 +10,6 @@
     x:DataType="views:ConfigurationWindow"
     Title="PoE Kompanion Configuration"
     CanResize="False"
-    WindowStartupLocation="CenterScreen"
     SystemDecorations="None"
     ShowInTaskbar="True"
     Topmost="True"

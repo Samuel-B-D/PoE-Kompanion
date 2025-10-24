@@ -80,4 +80,10 @@
         <PackageReference Include="SharpHook" Version="7.0.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Views\InputBlockerOverlay.axaml.cs">
+        <DependentUpon>InputBlockerOverlay.axaml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

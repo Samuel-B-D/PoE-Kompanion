@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
@@ -26,8 +27,14 @@ public class App : Application
 
     private bool isShuttingDown;
 
+    private ConfigurationWindow? configWindow;
+
+    private int? poeProcessId;
+
     public static App? Instance { get; private set; }
-    
+
+    public int? GetPoEProcessId() => this.poeProcessId;
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -93,9 +100,10 @@ public class App : Application
             }
             else if (message is SetAlwaysOnTopMessage setAlwaysOnTop)
             {
+                this.poeProcessId = setAlwaysOnTop.ProcessId;
                 _ = Task.Run(() =>
                 {
-                    if (X11WindowManager.TrySetAlwaysOnTop(setAlwaysOnTop.ProcessId))
+                    if (WindowManager.TrySetAlwaysOnTop(setAlwaysOnTop.ProcessId))
                     {
                         Console.WriteLine("Set PoE window to always-on-top");
                     }
@@ -253,13 +261,21 @@ public class App : Application
     {
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            var configWindow = new ConfigurationWindow();
-            configWindow.Closed += async (_, _) =>
+            if (this.configWindow is not null)
             {
+                this.configWindow.Activate();
+                ConfigurationWindow.EnsureAlwaysOnTop();
+                return;
+            }
+
+            this.configWindow = new ConfigurationWindow();
+            this.configWindow.Closed += async (_, _) =>
+            {
+                this.configWindow = null;
                 this.config = await ConfigurationManager.LoadAsync();
                 this.StartMainHook();
             };
-            configWindow.Show();
+            this.configWindow.Show();
         });
     }
 

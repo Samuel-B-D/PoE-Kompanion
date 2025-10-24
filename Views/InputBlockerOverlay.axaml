@@ -1,0 +1,21 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="clr-namespace:PoEKompanion.Views"
+    x:Class="PoEKompanion.Views.InputBlockerOverlay"
+    x:DataType="views:InputBlockerOverlay"
+    Title="Input Blocker"
+    WindowState="Normal"
+    SystemDecorations="None"
+    ShowInTaskbar="False"
+    Topmost="True"
+    TransparencyLevelHint="Transparent"
+    Background="#01000000"
+    ExtendClientAreaToDecorationsHint="True"
+    ExtendClientAreaChromeHints="NoChrome"
+    ExtendClientAreaTitleBarHeightHint="-1"
+    CanResize="False"
+    Focusable="False"
+>
+    <Panel Background="Transparent" PointerPressed="OnPointerPressed" />
+</Window>
