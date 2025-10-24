@@ -8,11 +8,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c9c69dd8-cc0c-4cab-8cdd-d86383ca677a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.PoeKompanion/.idea/avalonia.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PoeKompanion/.idea/avalonia.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PoeKompanion/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PoeKompanion/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/App.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/poe-kompanion.ico" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/poe-kompanion-old.ico" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/App.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Controls/HotkeyPickerButton.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/Controls/HotkeyPickerButton.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PoEKompanion.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PoEKompanion.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controls/HotkeyPickerButton.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controls/HotkeyPickerButton.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PoeKompanion.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/PoeKompanion.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Views/ConfigurationWindow.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/Views/ConfigurationWindow.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Views/ConfigurationWindow.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Views/ConfigurationWindow.axaml.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +29,15 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/31becbea6fcc17e45b8bf8d055bbbdc0799cf5cd9a91d501ec46d4e16673894/BasicGlobalHookBase.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/45c62c1f9af1eb2248ec17220752868b3b6728095879e849b6ea733ef7f5ff/CastHelpers.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7cd42a69b93843ada34898484a92ab55107c00/_4b3ab/IClassicDesktopStyleApplicationLifetime.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9dd2ee8eea3c89dae54b35341f5ed47091b13658c5b9c3125f92b8c3ec69c4ee/Process.NonUap.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/Controls/HotkeyPickerButton.axaml.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/Controls/HotkeyPickerButton.axaml.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/kaz/RiderProjects/PoEKompanion/Views/ConfigurationWindow.axaml.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -35,23 +48,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Project.PoEKompanion.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;full.screen.before.presentation.mode&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Project.PoEKompanion.executor": "Debug",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "full.screen.before.presentation.mode": "false",
+    "git-widget-placeholder": "master",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="PoEKompanion" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="$PROJECT_DIR$/bin/Debug/net9.0/linux-x64/PoEKompanion" />
@@ -88,6 +101,7 @@
       <workItem from="1761277532213" duration="505000" />
       <workItem from="1761278066237" duration="564000" />
       <workItem from="1761278672000" duration="33000" />
+      <workItem from="1761278716077" duration="5588000" />
     </task>
     <servers />
   </component>
@@ -103,18 +117,17 @@
     <breakpoint-manager>
       <breakpoints>
         <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
-          <properties exception="System.OperationCanceledException" breakIfHandledByOtherCode="false" displayValue="System.OperationCanceledException" />
-          <option name="timeStamp" value="1" />
-        </breakpoint>
-        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
-          <properties exception="System.Threading.Tasks.TaskCanceledException" breakIfHandledByOtherCode="false" displayValue="System.Threading.Tasks.TaskCanceledException" />
-          <option name="timeStamp" value="2" />
-        </breakpoint>
-        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
-          <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
-          <option name="timeStamp" value="3" />
+          <properties exception="System.InvalidOperationException" isInternal="false" displayValue="InvalidOperationException" namespaceName="System">
+            <option name="internal" value="false" />
+          </properties>
+          <option name="timeStamp" value="4" />
         </breakpoint>
       </breakpoints>
+      <default-breakpoints>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties breakIfHandledByUserCode="true" />
+        </breakpoint>
+      </default-breakpoints>
     </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
