@@ -4,6 +4,11 @@
 
 - **Local commits allowed**: Create commits, branches, merges, etc. as needed
 - **NEVER push**: Do not push to remote repositories under any circumstances
+- **Phase-based workflow**: When working in phases:
+  - Complete the phase implementation
+  - Report to the user for validation
+  - Wait for explicit user approval before committing
+  - Only commit after user confirms the phase is acceptable
 - The user handles all remote operations manually
 
 ## General Style
