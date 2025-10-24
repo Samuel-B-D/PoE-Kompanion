@@ -119,30 +119,36 @@ Implement a configurable hotkey system to allow users to customize the logout sh
 
 **Purpose**: Reusable control for capturing keyboard input
 
-**Behavior**:
-1. **Normal State**: Display current key name (e.g., "BackQuote")
-2. **Listening State**: Display "Press a key..." and change appearance
-3. **Capture State**:
-   - Use SharpHook to capture next key press
-   - Handle Escape to cancel
-   - Validate key (warn about modifier keys, function keys, etc.)
-   - Update display and exit listening mode
+**Behavior** (Based on PoE UI reference):
+1. **Normal State**:
+   - Display current key name (e.g., "BackQuote")
+   - Button appears in normal state
+2. **Hover State**:
+   - Show hover effect (no tooltip in this state)
+   - Standard button hover appearance
+3. **Activated/Listening State** (when clicked):
+   - Button stays in "pressed" visual state
+   - Show tooltip to the right: "Press a key or mouse button to bind it to this action (press escape to cancel)"
+   - Capture next key press using SharpHook
+   - Handle Escape to cancel and return to normal state
+   - On valid key press: update display, hide tooltip, return to normal state
 
 **Implementation Details**:
 - Custom Avalonia control inheriting from `Button`
 - Dependency properties:
   - `SelectedKeyCode` (bindable)
-  - `IsListening` (for visual state)
+  - `IsListening` (for visual state and tooltip visibility)
 - Use `EventLoopGlobalHook` temporarily during capture
   - Start hook on button click
   - Stop hook after key captured or cancelled
   - Properly dispose hook to avoid resource leaks
 - Visual states:
-  - Normal: Gray background, black text
-  - Listening: Blue/highlighted background, "Press a key..." text
-  - Hover: Slight highlight
+  - Normal: Default button appearance
+  - Hover: Subtle highlight
+  - Listening/Pressed: Button stays in pressed state, tooltip visible to the right
+- Tooltip placement: Right of the button (when in listening state only)
 
-**Styling**: Use Avalonia's style system for visual states
+**Styling**: Use Avalonia's style system for visual states (Phase 5 will apply PoE-like styling)
 
 ---
 
@@ -255,7 +261,31 @@ OnFrameworkInitializationCompleted()
 15. Add user-friendly key name display (convert `VcBackQuote` → "BackQuote")
 16. Test with various hotkeys (F1-F12, letter keys, etc.)
 
-**Goal**: Production-ready feature
+**Goal**: Production-ready feature with basic styling
+
+---
+
+### Phase 5: PoE-Inspired Visual Styling
+17. Style the Configuration Window to match PoE aesthetic:
+    - Dark theme with warm brown/golden accents
+    - Ornate frame/border design (based on PoE screenshots)
+    - Custom button styles matching PoE input picker buttons
+18. Style the HotkeyPickerButton:
+    - Normal state: Brown/golden button with subtle border
+    - Hover state: Lighter highlight effect
+    - Pressed/Listening state: Inset/darker appearance
+    - Tooltip: Dark background with white text, positioned to the right
+19. Style labels and text:
+    - Orange/golden text color for labels (like PoE)
+    - Appropriate fonts and sizing
+20. Polish overall window appearance:
+    - Background texture/color matching PoE options panel
+    - Consistent spacing and alignment
+    - Save/Close buttons styled to match PoE
+
+**Goal**: Visually polished UI matching Path of Exile aesthetic
+
+**Reference**: See `PoE-GUI-examples/` for visual reference screenshots
 
 ---
 
@@ -393,12 +423,13 @@ PoEKompanion/
 
 ## Estimated Effort
 
-- **Phase 1 (Foundation)**: 2-3 hours
+- **Phase 1 (Foundation)**: ✅ Completed
 - **Phase 2 (UI Components)**: 3-4 hours
 - **Phase 3 (Integration)**: 2 hours
 - **Phase 4 (Polish & Testing)**: 2-3 hours
+- **Phase 5 (PoE Visual Styling)**: 2-3 hours
 
-**Total**: 9-12 hours
+**Total Remaining**: 9-12 hours
 
 ---
 
