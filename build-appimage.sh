@@ -23,9 +23,9 @@ if [ ! -f "appimagetool-x86_64.AppImage" ]; then
     chmod +x appimagetool-x86_64.AppImage
 fi
 
-# Create AppImage
+# Create AppImage with embedded icon
 echo "Creating AppImage..."
-ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir PoE-Kompanion-x86_64.AppImage
+ARCH=x86_64 ./appimagetool-x86_64.AppImage --comp gzip AppDir PoE-Kompanion-x86_64.AppImage
 
 echo "Build complete! AppImage created: PoE-Kompanion-x86_64.AppImage"
 echo ""
