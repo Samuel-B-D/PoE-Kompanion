@@ -56,3 +56,10 @@ nunit-*.xml
 # JetBrains
 .idea
 *.DotSettings.user
+
+# AppImage build artifacts
+AppDir/usr/bin/*
+!AppDir/usr/bin/.gitkeep
+AppDir/.DirIcon
+*.AppImage
+appimagetool-*.AppImage

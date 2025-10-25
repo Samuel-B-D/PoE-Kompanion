@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=PoE Kompanion
+Comment=Path of Exile companion utility
+Exec=PoEKompanion
+Icon=poe-kompanion
+Type=Application
+Categories=Game;Utility;
+Terminal=false

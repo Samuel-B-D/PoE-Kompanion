@@ -35,6 +35,21 @@ public class App : Application
 
     public int? GetPoEProcessId() => this.poeProcessId;
 
+    private static string GetExecutablePath()
+    {
+        var appImagePath = Environment.GetEnvironmentVariable("APPIMAGE");
+        if (!string.IsNullOrEmpty(appImagePath) && File.Exists(appImagePath)) return appImagePath;
+
+        try
+        {
+            var selfExe = File.ResolveLinkTarget("/proc/self/exe", true);
+            if (selfExe?.Exists == true) return selfExe.FullName;
+        }
+        catch (Exception) { /* nom */ }
+
+        return Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.FriendlyName));
+    }
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -52,7 +67,7 @@ public class App : Application
             desktop.ShutdownMode = Avalonia.Controls.ShutdownMode.OnExplicitShutdown;
             desktop.MainWindow = null;
 
-            var path = Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.FriendlyName));
+            var path = GetExecutablePath();
 
             var args = desktop.Args;
             for (var i = 0; i < args?.Length; ++i)

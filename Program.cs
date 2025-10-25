@@ -17,13 +17,28 @@ internal static class Program
     [DllImport("libc", SetLastError = true)]
     private static extern int prctl(int option, int arg2, int arg3, int arg4, int arg5);
 
+    private static string GetExecutablePath()
+    {
+        var appImagePath = Environment.GetEnvironmentVariable("APPIMAGE");
+        if (!string.IsNullOrEmpty(appImagePath) && File.Exists(appImagePath)) return appImagePath;
+
+        try
+        {
+            var selfExe = File.ResolveLinkTarget("/proc/self/exe", true);
+            if (selfExe?.Exists == true) return selfExe.FullName;
+        }
+        catch (Exception) { /* nom */ }
+
+        return Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.FriendlyName));
+    }
+
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
     public static async Task Main(string[] args)
     {
-        var path = Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.FriendlyName));
+        var path = GetExecutablePath();
         var currentProcess = Process.GetCurrentProcess();
         foreach (var process in Process.GetProcesses().Where(p => !p.Equals(currentProcess) && p.MainModule?.FileName == path))
         {
