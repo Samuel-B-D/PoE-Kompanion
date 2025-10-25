@@ -1,10 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
+        <!-- Version -->
+        <AppVersion>0.1.0</AppVersion>
+
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <Version>$(AppVersion)</Version>
 
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+
+        <!-- Assembly metadata -->
+        <AssemblyVersion>$(AppVersion)</AssemblyVersion>
+        <FileVersion>$(AppVersion)</FileVersion>
+        <Product>PoE Kompanion</Product>
+        <Title>PoE Kompanion</Title>
+        <Description>Path of Exile companion utility for instant logout and game management</Description>
+        <Authors>Kaz</Authors>
+        <RepositoryUrl>https://github.com/Samuel-B-D/PoE-Kompanion</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <NeutralLanguage>en-US</NeutralLanguage>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
