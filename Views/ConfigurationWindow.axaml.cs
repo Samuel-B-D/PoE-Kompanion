@@ -3,6 +3,7 @@ namespace PoEKompanion.Views;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -16,6 +17,7 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
 
     private ConfigurationModel currentConfig;
     private InputBlockerOverlay? overlay;
+    private CancellationTokenSource? pollCancellation;
 
     public KeyCode LogoutHotkey
     {
@@ -56,11 +58,14 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
             this.PositionOverPoE();
 
             EnsureAlwaysOnTop();
-            this.ShowOverlay();
+            this.ShowOverlayIfGameDetected();
+            this.StartPollingForGame();
         };
 
         this.Closing += (_, _) =>
         {
+            this.pollCancellation?.Cancel();
+            this.pollCancellation?.Dispose();
             this.overlay?.Close();
             this.overlay = null;
         };
@@ -83,23 +88,45 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
         this.Position = new Avalonia.PixelPoint(centerX, centerY);
     }
 
-    private void ShowOverlay()
+    private void ShowOverlayIfGameDetected()
     {
-        this.overlay = new InputBlockerOverlay(this);
+        if (this.overlay is not null) return;
 
         var poeProcessId = App.Instance?.GetPoEProcessId();
-        if (poeProcessId.HasValue)
-        {
-            this.overlay.PositionOverPoEWindow(poeProcessId.Value);
-        }
+        if (!poeProcessId.HasValue) return;
 
+        this.overlay = new InputBlockerOverlay(this);
+        this.overlay.PositionOverPoEWindow(poeProcessId.Value);
         this.overlay.Show();
+
+        this.Activate();
+    }
+
+    private void StartPollingForGame()
+    {
+        this.pollCancellation = new CancellationTokenSource();
+        var token = this.pollCancellation.Token;
 
         _ = Task.Run(async () =>
         {
-            await Task.Delay(100);
-            this.Activate();
-        });
+            while (!token.IsCancellationRequested)
+            {
+                if (this.overlay is not null) continue;
+
+                var poeProcessId = App.Instance?.GetPoEProcessId();
+                if (!poeProcessId.HasValue) continue;
+
+                WindowManager.TrySetAlwaysOnTop(poeProcessId.Value);
+
+                await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    this.ShowOverlayIfGameDetected();
+                    this.PositionOverPoE();
+                });
+
+                EnsureAlwaysOnTop();
+            }
+        }, token);
     }
 
     public static void EnsureAlwaysOnTop()
@@ -134,7 +161,6 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
         {
             Console.WriteLine($"Error saving configuration: {ex.Message}");
             NotificationManager.SendError("Error saving configuration");
-            // TODO: Show user-friendly error dialog in Phase 5 with styled UI
         }
     }
 

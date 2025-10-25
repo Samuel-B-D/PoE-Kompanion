@@ -82,12 +82,12 @@ internal sealed class PoETracker
 
             if (proc?.Id is not null)
             {
-                _ = this.ipc?.SendAsync(new NotificationMessage("Path of Exile process detected and hooked!", false));
+                _ = this.ipc?.SendAsync(new PoEHookedMessage(proc.Id));
                 _ = this.ipc?.SendAsync(new SetAlwaysOnTopMessage(proc.Id));
             }
             else
             {
-                this.ipc?.SendAsync(new NotificationMessage("Path of Exile closed", false));
+                _ = this.ipc?.SendAsync(new PoEUnhookedMessage());
             }
         }
     }

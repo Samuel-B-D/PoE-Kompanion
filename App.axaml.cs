@@ -113,9 +113,18 @@ public class App : Application
                     NotificationManager.SendInfo(notification.Title, notification.Message);
                 }
             }
+            else if (message is PoEHookedMessage poeHookedMessage)
+            {
+                this.poeProcessId = poeHookedMessage.ProcessId;
+                NotificationManager.SendInfo("Path of Exile process detected and hooked!");
+            }
+            else if (message is PoEUnhookedMessage)
+            {
+                this.poeProcessId = null;
+                NotificationManager.SendInfo("Path of Exile closed");
+            }
             else if (message is SetAlwaysOnTopMessage setAlwaysOnTop)
             {
-                this.poeProcessId = setAlwaysOnTop.ProcessId;
                 _ = Task.Run(() =>
                 {
                     if (WindowManager.TrySetAlwaysOnTop(setAlwaysOnTop.ProcessId))
