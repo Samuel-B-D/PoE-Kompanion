@@ -17,7 +17,7 @@ internal static class Program
     [DllImport("libc", SetLastError = true)]
     private static extern int prctl(int option, int arg2, int arg3, int arg4, int arg5);
 
-    private static string GetExecutablePath()
+    public static string GetExecutablePath()
     {
         var appImagePath = Environment.GetEnvironmentVariable("APPIMAGE");
         if (!string.IsNullOrEmpty(appImagePath) && File.Exists(appImagePath)) return appImagePath;
@@ -51,6 +51,8 @@ internal static class Program
 
         if (args.Length > 0 && args[0] == "--bg")
         {
+            Environment.SetEnvironmentVariable("APPIMAGELAUNCHER_DISABLE", "1");
+
             if (OperatingSystem.IsLinux())
             {
                 prctl(PR_SET_PDEATHSIG, SIGTERM, 0, 0, 0);

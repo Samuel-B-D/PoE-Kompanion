@@ -3,6 +3,10 @@ set -e
 
 echo "Building PoE Kompanion AppImage..."
 
+# Extract version from csproj
+VERSION=$(grep -oP '<AppVersion>\K[^<]+' PoEKompanion.csproj)
+echo "Version: $VERSION"
+
 # Clean previous build artifacts
 echo "Cleaning previous build artifacts..."
 rm -rf AppDir/usr/bin/*
@@ -25,8 +29,9 @@ fi
 
 # Create AppImage with embedded icon
 echo "Creating AppImage..."
-ARCH=x86_64 ./appimagetool-x86_64.AppImage --comp gzip AppDir PoE-Kompanion-x86_64.AppImage
+APPIMAGE_NAME="PoE-Kompanion-${VERSION}-x86_64.AppImage"
+ARCH=x86_64 ./appimagetool-x86_64.AppImage --comp gzip AppDir "$APPIMAGE_NAME"
 
-echo "Build complete! AppImage created: PoE-Kompanion-x86_64.AppImage"
+echo "Build complete! AppImage created: $APPIMAGE_NAME"
 echo ""
-echo "To run: ./PoE-Kompanion-x86_64.AppImage"
+echo "To run: ./$APPIMAGE_NAME"

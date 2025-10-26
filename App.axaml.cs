@@ -35,21 +35,6 @@ public class App : Application
 
     public int? GetPoEProcessId() => this.poeProcessId;
 
-    private static string GetExecutablePath()
-    {
-        var appImagePath = Environment.GetEnvironmentVariable("APPIMAGE");
-        if (!string.IsNullOrEmpty(appImagePath) && File.Exists(appImagePath)) return appImagePath;
-
-        try
-        {
-            var selfExe = File.ResolveLinkTarget("/proc/self/exe", true);
-            if (selfExe?.Exists == true) return selfExe.FullName;
-        }
-        catch (Exception) { /* nom */ }
-
-        return Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.FriendlyName));
-    }
-
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -64,10 +49,10 @@ public class App : Application
 
         if (this.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.ShutdownMode = Avalonia.Controls.ShutdownMode.OnExplicitShutdown;
+            desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
             desktop.MainWindow = null;
 
-            var path = GetExecutablePath();
+            var path = Program.GetExecutablePath();
 
             var args = desktop.Args;
             for (var i = 0; i < args?.Length; ++i)
@@ -174,7 +159,11 @@ public class App : Application
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "sudo",
-                    Arguments = $"-n {path} --bg {currentPid}",
+                    Environment =
+                    {
+                        {"APPIMAGELAUNCHER_DISABLE", "1"},
+                    },
+                    Arguments = $"-n --preserve-env=APPIMAGELAUNCHER_DISABLE {path} --bg {currentPid}",
                     UseShellExecute = false,
                     CreateNoWindow = true,
                 },
@@ -196,7 +185,7 @@ public class App : Application
                             StartInfo = new ProcessStartInfo
                             {
                                 FileName = "pkexec",
-                                Arguments = $"sudo {path} --bg {currentPid}",
+                                Arguments = $"{path} --bg {currentPid}",
                                 UseShellExecute = false,
                                 CreateNoWindow = true,
                             },
@@ -237,7 +226,7 @@ public class App : Application
                     StartInfo = new ProcessStartInfo
                     {
                         FileName = "pkexec",
-                        Arguments = $"sudo {path} --bg {currentPid}",
+                        Arguments = $"{path} --bg {currentPid}",
                         UseShellExecute = false,
                         CreateNoWindow = true,
                     },
