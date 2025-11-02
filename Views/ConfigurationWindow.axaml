@@ -35,7 +35,7 @@
                   ColumnDefinitions="*,*"
                   HorizontalAlignment="Stretch"
                   Margin="0,10,0,0">
-                <Button Grid.Column="0" 
+                <Button Grid.Column="0"
                         Content="SAVE"
                         Click="OnSaveClick"
                         HorizontalAlignment="Stretch"
@@ -45,10 +45,12 @@
                         <MultiBinding Converter="{x:Static BoolConverters.And}">
                             <Binding Path="!#LogoutHotkeyPicker.IsListening" />
                             <Binding Path="!#SettingsHotkeyPicker.IsListening" />
+                            <Binding Path="!#HideoutHotkeyPicker.IsListening" />
+                            <Binding Path="!#ExitHotkeyPicker.IsListening" />
                         </MultiBinding>
                     </Button.IsEnabled>
                 </Button>
-                <Button Grid.Column="1" 
+                <Button Grid.Column="1"
                         Click="OnCancelClick"
                         Content="CLOSE"
                         IsCancel="True"
@@ -59,25 +61,39 @@
                         <MultiBinding Converter="{x:Static BoolConverters.And}">
                             <Binding Path="!#LogoutHotkeyPicker.IsListening" />
                             <Binding Path="!#SettingsHotkeyPicker.IsListening" />
+                            <Binding Path="!#HideoutHotkeyPicker.IsListening" />
+                            <Binding Path="!#ExitHotkeyPicker.IsListening" />
                         </MultiBinding>
                     </Button.IsEnabled>
                 </Button>
             </Grid>
 
-            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="20" 
-                  RowDefinitions="Auto, Auto" RowSpacing="10"
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="20"
+                  RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="10"
                   Margin="0 10 0 20">
                 <Label Grid.Column="0" Grid.Row="0" Content="Logout:" />
                 <controls:HotkeyPickerButton
                     Name="LogoutHotkeyPicker"
                     Grid.Column="1" Grid.Row="0"
-                    SelectedKeyCode="{Binding LogoutHotkey}" />
-                
+                    SelectedHotkey="{Binding LogoutHotkey}" />
+
                 <Label Grid.Column="0" Grid.Row="1" Content="Open Settings:" />
-                <controls:HotkeyPickerButton 
+                <controls:HotkeyPickerButton
                     Name="SettingsHotkeyPicker"
                     Grid.Column="1" Grid.Row="1"
-                    SelectedKeyCode="{Binding OpenSettingsHotkey}" />
+                    SelectedHotkey="{Binding OpenSettingsHotkey}" />
+
+                <Label Grid.Column="0" Grid.Row="2" Content="Hideout:" />
+                <controls:HotkeyPickerButton
+                    Name="HideoutHotkeyPicker"
+                    Grid.Column="1" Grid.Row="2"
+                    SelectedHotkey="{Binding HideoutHotkey}" />
+
+                <Label Grid.Column="0" Grid.Row="3" Content="Exit:" />
+                <controls:HotkeyPickerButton
+                    Name="ExitHotkeyPicker"
+                    Grid.Column="1" Grid.Row="3"
+                    SelectedHotkey="{Binding ExitHotkey}" />
             </Grid>
 
         </DockPanel>

@@ -100,7 +100,8 @@
                 Click="OnButtonClick"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                MinWidth="150"/>
+                MinWidth="150"
+                Focusable="False"/>
 
         <Popup Name="InstructionPopup"
                IsOpen="{Binding #Root.IsListening}"

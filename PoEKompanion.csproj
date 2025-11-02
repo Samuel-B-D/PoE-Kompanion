@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <!-- Version -->
-        <AppVersion>0.1.0</AppVersion>
+        <AppVersion>0.2.0</AppVersion>
 
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
@@ -15,7 +15,7 @@
         <FileVersion>$(AppVersion)</FileVersion>
         <Product>PoE Kompanion</Product>
         <Title>PoE Kompanion</Title>
-        <Description>Path of Exile companion utility for instant logout and game management</Description>
+        <Description>Path of Exile companion utility for instant logout other macros/tools</Description>
         <Authors>Kaz</Authors>
         <RepositoryUrl>https://github.com/Samuel-B-D/PoE-Kompanion</RepositoryUrl>
         <RepositoryType>git</RepositoryType>

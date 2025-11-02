@@ -19,27 +19,50 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
     private InputBlockerOverlay? overlay;
     private CancellationTokenSource? pollCancellation;
 
-    public KeyCode LogoutHotkey
+    public HotkeyCombo? LogoutHotkey
     {
         get => this.currentConfig.LogoutHotkey;
         set
         {
             if (this.currentConfig.LogoutHotkey == value) return;
-            this.currentConfig.LogoutHotkey = value;
+            this.currentConfig.LogoutHotkey = value ?? new HotkeyCombo(KeyCode.VcBackQuote);
             this.OnPropertyChanged();
         }
     }
-    
-    public KeyCode OpenSettingsHotkey
+
+    public HotkeyCombo? OpenSettingsHotkey
     {
         get => this.currentConfig.OpenSettingsHotkey;
         set
         {
             if (this.currentConfig.OpenSettingsHotkey == value) return;
-            this.currentConfig.OpenSettingsHotkey = value;
+            this.currentConfig.OpenSettingsHotkey = value ?? new HotkeyCombo(KeyCode.VcF10);
             this.OnPropertyChanged();
         }
     }
+
+    public HotkeyCombo? HideoutHotkey
+    {
+        get => this.currentConfig.HideoutHotkey;
+        set
+        {
+            if (this.currentConfig.HideoutHotkey == value) return;
+            this.currentConfig.HideoutHotkey = value ?? new HotkeyCombo(KeyCode.VcF5);
+            this.OnPropertyChanged();
+        }
+    }
+
+    public HotkeyCombo? ExitHotkey
+    {
+        get => this.currentConfig.ExitHotkey;
+        set
+        {
+            if (this.currentConfig.ExitHotkey == value) return;
+            this.currentConfig.ExitHotkey = value ?? new HotkeyCombo(KeyCode.VcSpace, ctrl: true, shift: true);
+            this.OnPropertyChanged();
+        }
+    }
+
 
     public ConfigurationWindow()
     {
@@ -111,6 +134,7 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
         {
             while (!token.IsCancellationRequested)
             {
+                await Task.Delay(100, token);
                 if (this.overlay is not null) continue;
 
                 var poeProcessId = App.Instance?.GetPoEProcessId();
@@ -148,6 +172,8 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
         this.currentConfig = await ConfigurationManager.LoadAsync();
         this.OnPropertyChanged(nameof(this.LogoutHotkey));
         this.OnPropertyChanged(nameof(this.OpenSettingsHotkey));
+        this.OnPropertyChanged(nameof(this.HideoutHotkey));
+        this.OnPropertyChanged(nameof(this.ExitHotkey));
     }
     
     private async Task SaveConfiguration()

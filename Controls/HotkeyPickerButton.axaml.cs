@@ -17,24 +17,28 @@ public partial class HotkeyPickerButton : UserControl, INotifyPropertyChanged
 {
     private bool isListening;
     private SimpleGlobalHook? captureHook;
+    private bool isCtrlPressed;
+    private bool isShiftPressed;
+    private bool isAltPressed;
+    private bool isStopping;
 
     public new event PropertyChangedEventHandler? PropertyChanged;
 
-    public static readonly StyledProperty<KeyCode> SelectedKeyCodeProperty =
-        AvaloniaProperty.Register<HotkeyPickerButton, KeyCode>(
-            nameof(SelectedKeyCode),
-            KeyCode.VcBackQuote,
+    public static readonly StyledProperty<HotkeyCombo?> SelectedHotkeyProperty =
+        AvaloniaProperty.Register<HotkeyPickerButton, HotkeyCombo?>(
+            nameof(SelectedHotkey),
+            new HotkeyCombo(KeyCode.VcBackQuote),
             defaultBindingMode: BindingMode.TwoWay);
 
-    public KeyCode SelectedKeyCode
+    public HotkeyCombo? SelectedHotkey
     {
-        get => this.GetValue(SelectedKeyCodeProperty);
-        set => this.SetValue(SelectedKeyCodeProperty, value);
+        get => this.GetValue(SelectedHotkeyProperty);
+        set => this.SetValue(SelectedHotkeyProperty, value);
     }
 
     static HotkeyPickerButton()
     {
-        SelectedKeyCodeProperty.Changed.AddClassHandler<HotkeyPickerButton>((control, args) =>
+        SelectedHotkeyProperty.Changed.AddClassHandler<HotkeyPickerButton>((control, args) =>
         {
             control.OnPropertyChanged(nameof(KeyDisplayName));
         });
@@ -66,7 +70,7 @@ public partial class HotkeyPickerButton : UserControl, INotifyPropertyChanged
         }
     }
 
-    public string KeyDisplayName => FormatKeyName(this.SelectedKeyCode);
+    public string KeyDisplayName => this.SelectedHotkey?.ToString() ?? "None";
 
     public HotkeyPickerButton()
     {
@@ -96,10 +100,22 @@ public partial class HotkeyPickerButton : UserControl, INotifyPropertyChanged
         try
         {
             this.captureHook = new SimpleGlobalHook();
+            this.isCtrlPressed = false;
+            this.isShiftPressed = false;
+            this.isAltPressed = false;
+            this.isStopping = false;
 
             this.captureHook.KeyPressed += async (_, args) =>
             {
+                if (this.isStopping) return;
+
                 var keyCode = args.Data.KeyCode;
+
+                if (IsModifierKey(keyCode))
+                {
+                    this.UpdateModifierState(keyCode, true);
+                    return;
+                }
 
                 if (keyCode == KeyCode.VcEscape)
                 {
@@ -107,8 +123,26 @@ public partial class HotkeyPickerButton : UserControl, INotifyPropertyChanged
                     return;
                 }
 
-                await Dispatcher.UIThread.InvokeAsync(() => this.SelectedKeyCode = keyCode);
+                var combo = new HotkeyCombo(
+                    keyCode,
+                    this.isCtrlPressed,
+                    this.isShiftPressed,
+                    this.isAltPressed
+                );
+
+                await Dispatcher.UIThread.InvokeAsync(() => this.SelectedHotkey = combo);
                 await Dispatcher.UIThread.InvokeAsync(async () => await this.StopKeyCaptureAsync());
+            };
+
+            this.captureHook.KeyReleased += (_, args) =>
+            {
+                if (this.isStopping) return;
+
+                var keyCode = args.Data.KeyCode;
+                if (IsModifierKey(keyCode))
+                {
+                    this.UpdateModifierState(keyCode, false);
+                }
             };
 
             await Task.Run(() => this.captureHook.Run());
@@ -124,6 +158,8 @@ public partial class HotkeyPickerButton : UserControl, INotifyPropertyChanged
     {
         if (this.captureHook is null) return;
 
+        this.isStopping = true;
+
         var hookToDispose = this.captureHook;
         this.captureHook = null;
 
@@ -132,10 +168,29 @@ public partial class HotkeyPickerButton : UserControl, INotifyPropertyChanged
         await Dispatcher.UIThread.InvokeAsync(() => this.IsListening = false);
     }
 
-    private static string FormatKeyName(KeyCode keyCode)
+    private static bool IsModifierKey(KeyCode keyCode) =>
+        keyCode is KeyCode.VcLeftControl or KeyCode.VcRightControl or
+                   KeyCode.VcLeftShift or KeyCode.VcRightShift or
+                   KeyCode.VcLeftAlt or KeyCode.VcRightAlt or
+                   KeyCode.VcLeftMeta or KeyCode.VcRightMeta;
+
+    private void UpdateModifierState(KeyCode keyCode, bool isPressed)
     {
-        var name = keyCode.ToString();
-        return name.StartsWith("Vc") ? name[2..] : name;
+        switch (keyCode)
+        {
+            case KeyCode.VcLeftControl:
+            case KeyCode.VcRightControl:
+                this.isCtrlPressed = isPressed;
+                break;
+            case KeyCode.VcLeftShift:
+            case KeyCode.VcRightShift:
+                this.isShiftPressed = isPressed;
+                break;
+            case KeyCode.VcLeftAlt:
+            case KeyCode.VcRightAlt:
+                this.isAltPressed = isPressed;
+                break;
+        }
     }
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

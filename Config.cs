@@ -9,11 +9,14 @@ using SharpHook.Data;
 
 public class ConfigurationModel
 {
-    public KeyCode LogoutHotkey { get; set; } = KeyCode.VcBackQuote;
-    public KeyCode OpenSettingsHotkey { get; set; } = KeyCode.VcF10;
+    public HotkeyCombo LogoutHotkey { get; set; } = new(KeyCode.VcBackQuote);
+    public HotkeyCombo OpenSettingsHotkey { get; set; } = new(KeyCode.VcF10);
+    public HotkeyCombo HideoutHotkey { get; set; } = new(KeyCode.VcF5);
+    public HotkeyCombo ExitHotkey { get; set; } = new(KeyCode.VcSpace, ctrl: true, shift: true);
 }
 
 [JsonSerializable(typeof(ConfigurationModel))]
+[JsonSerializable(typeof(HotkeyCombo))]
 [JsonSourceGenerationOptions(WriteIndented = true)]
 internal partial class ConfigJsonContext : JsonSerializerContext
 {
@@ -44,10 +47,28 @@ public static class ConfigurationManager
                 return GetDefault();
             }
 
-            if (!Enum.IsDefined(typeof(KeyCode), config.LogoutHotkey))
+            if (!Enum.IsDefined(typeof(KeyCode), config.LogoutHotkey.Key))
             {
-                Console.WriteLine($"Warning: Invalid hotkey '{config.LogoutHotkey}' in configuration. Using default.");
-                config.LogoutHotkey = KeyCode.VcBackQuote;
+                Console.WriteLine("Warning: Invalid logout hotkey in configuration. Using default.");
+                config.LogoutHotkey = new HotkeyCombo(KeyCode.VcBackQuote);
+            }
+
+            if (!Enum.IsDefined(typeof(KeyCode), config.OpenSettingsHotkey.Key))
+            {
+                Console.WriteLine("Warning: Invalid settings hotkey in configuration. Using default.");
+                config.OpenSettingsHotkey = new HotkeyCombo(KeyCode.VcF10);
+            }
+
+            if (!Enum.IsDefined(typeof(KeyCode), config.HideoutHotkey.Key))
+            {
+                Console.WriteLine("Warning: Invalid hideout hotkey in configuration. Using default.");
+                config.HideoutHotkey = new HotkeyCombo(KeyCode.VcF5);
+            }
+
+            if (!Enum.IsDefined(typeof(KeyCode), config.ExitHotkey.Key))
+            {
+                Console.WriteLine("Warning: Invalid exit hotkey in configuration. Using default.");
+                config.ExitHotkey = new HotkeyCombo(KeyCode.VcSpace, ctrl: true, shift: true);
             }
 
             return config;
@@ -82,5 +103,5 @@ public static class ConfigurationManager
         }
     }
 
-    private static ConfigurationModel GetDefault() => new() { LogoutHotkey = KeyCode.VcBackQuote };
+    private static ConfigurationModel GetDefault() => new();
 }

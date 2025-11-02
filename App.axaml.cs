@@ -31,6 +31,12 @@ public class App : Application
 
     private int? poeProcessId;
 
+    private bool isCtrlPressed;
+    private bool isShiftPressed;
+    private bool isAltPressed;
+
+    private HotkeyCombo? pendingHotkeyCombo;
+
     public static App? Instance { get; private set; }
 
     public int? GetPoEProcessId() => this.poeProcessId;
@@ -118,27 +124,108 @@ public class App : Application
                     }
                 });
             }
+            else if (message is BackgroundReadyMessage)
+            {
+                Console.WriteLine("Received BackgroundReadyMessage, sending layout map");
+                await this.SendKeyboardLayoutMapAsync();
+            }
         }
+    }
+
+    private async Task SendKeyboardLayoutMapAsync()
+    {
+        if (this.ipc is null) return;
+
+        var layoutMap = KeyboardLayoutHelper.BuildLayoutMap();
+        Console.WriteLine($"Sending layout map with {layoutMap.Count} entries to background process");
+        await this.ipc.SendAsync(new KeyboardLayoutMapMessage(layoutMap));
+        Console.WriteLine("Layout map sent successfully");
     }
     
     private void StartMainHook()
     {
         if (this.hook is not null) return;
-        
+
         this.hook = new EventLoopGlobalHook();
+
         this.hook.KeyPressed += async (_, args) =>
         {
-            if (args.Data.KeyCode == this.config?.LogoutHotkey)
-            {
-                if (this.ipc is null) return;
+            var keyCode = args.Data.KeyCode;
 
+            if (IsModifierKey(keyCode))
+            {
+                this.UpdateModifierState(keyCode, true);
+                return;
+            }
+
+            if (this.config?.LogoutHotkey?.Matches(keyCode, this.isCtrlPressed, this.isShiftPressed, this.isAltPressed) == true)
+            {
+                // Fire immediately for logout (doesn't send text)
+                if (this.ipc is null) return;
                 await this.ipc.SendAsync(new ForceLogoutMessage());
             }
-            else if (args.Data.KeyCode == this.config?.OpenSettingsHotkey)
+            else if (this.config?.OpenSettingsHotkey?.Matches(keyCode, this.isCtrlPressed, this.isShiftPressed, this.isAltPressed) == true)
             {
+                // Fire immediately for settings (doesn't send text)
                 await this.OpenConfiguration();
             }
+            else if (this.config?.HideoutHotkey?.Matches(keyCode, this.isCtrlPressed, this.isShiftPressed, this.isAltPressed) == true)
+            {
+                // Defer if hotkey has modifiers - fire on release
+                if (this.config.HideoutHotkey.Ctrl || this.config.HideoutHotkey.Shift || this.config.HideoutHotkey.Alt)
+                {
+                    this.pendingHotkeyCombo = this.config.HideoutHotkey;
+                }
+                else
+                {
+                    if (this.ipc is null) return;
+                    await this.ipc.SendAsync(new ChatCommandMessage("/hideout"));
+                }
+            }
+            else if (this.config?.ExitHotkey?.Matches(keyCode, this.isCtrlPressed, this.isShiftPressed, this.isAltPressed) == true)
+            {
+                // Defer if hotkey has modifiers - fire on release
+                if (this.config.ExitHotkey.Ctrl || this.config.ExitHotkey.Shift || this.config.ExitHotkey.Alt)
+                {
+                    this.pendingHotkeyCombo = this.config.ExitHotkey;
+                }
+                else
+                {
+                    if (this.ipc is null) return;
+                    await this.ipc.SendAsync(new ChatCommandMessage("/exit"));
+                }
+            }
         };
+
+        this.hook.KeyReleased += async (_, args) =>
+        {
+            var keyCode = args.Data.KeyCode;
+            if (IsModifierKey(keyCode))
+            {
+                this.UpdateModifierState(keyCode, false);
+
+                // Check if all modifiers are now released and we have a pending hotkey
+                if (this.pendingHotkeyCombo is not null &&
+                    !this.isCtrlPressed && !this.isShiftPressed && !this.isAltPressed)
+                {
+                    var combo = this.pendingHotkeyCombo;
+                    this.pendingHotkeyCombo = null;
+
+                    // Fire the deferred action now that modifiers are released
+                    if (combo == this.config?.HideoutHotkey)
+                    {
+                        if (this.ipc is null) return;
+                        await this.ipc.SendAsync(new ChatCommandMessage("/hideout"));
+                    }
+                    else if (combo == this.config?.ExitHotkey)
+                    {
+                        if (this.ipc is null) return;
+                        await this.ipc.SendAsync(new ChatCommandMessage("/exit"));
+                    }
+                }
+            }
+        };
+
         _ = Task.Run(() => this.hook.RunAsync());
     }
 
@@ -148,12 +235,40 @@ public class App : Application
         this.hook = null;
     }
 
+    private static bool IsModifierKey(SharpHook.Data.KeyCode keyCode) =>
+        keyCode is SharpHook.Data.KeyCode.VcLeftControl or SharpHook.Data.KeyCode.VcRightControl or
+                   SharpHook.Data.KeyCode.VcLeftShift or SharpHook.Data.KeyCode.VcRightShift or
+                   SharpHook.Data.KeyCode.VcLeftAlt or SharpHook.Data.KeyCode.VcRightAlt or
+                   SharpHook.Data.KeyCode.VcLeftMeta or SharpHook.Data.KeyCode.VcRightMeta;
+
+    private void UpdateModifierState(SharpHook.Data.KeyCode keyCode, bool isPressed)
+    {
+        switch (keyCode)
+        {
+            case SharpHook.Data.KeyCode.VcLeftControl:
+            case SharpHook.Data.KeyCode.VcRightControl:
+                this.isCtrlPressed = isPressed;
+                break;
+            case SharpHook.Data.KeyCode.VcLeftShift:
+            case SharpHook.Data.KeyCode.VcRightShift:
+                this.isShiftPressed = isPressed;
+                break;
+            case SharpHook.Data.KeyCode.VcLeftAlt:
+            case SharpHook.Data.KeyCode.VcRightAlt:
+                this.isAltPressed = isPressed;
+                break;
+        }
+    }
+
     private void StartBackgroundProcess(string path)
     {
         var currentPid = Environment.ProcessId;
 
         try
         {
+            var display = Environment.GetEnvironmentVariable("DISPLAY") ?? ":0";
+            var xauthority = Environment.GetEnvironmentVariable("XAUTHORITY") ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".Xauthority");
+
             this.bgProcess = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -162,8 +277,10 @@ public class App : Application
                     Environment =
                     {
                         {"APPIMAGELAUNCHER_DISABLE", "1"},
+                        {"DISPLAY", display},
+                        {"XAUTHORITY", xauthority},
                     },
-                    Arguments = $"-n --preserve-env=APPIMAGELAUNCHER_DISABLE {path} --bg {currentPid}",
+                    Arguments = $"-n --preserve-env=APPIMAGELAUNCHER_DISABLE,DISPLAY,XAUTHORITY {path} --bg {currentPid}",
                     UseShellExecute = false,
                     CreateNoWindow = true,
                 },

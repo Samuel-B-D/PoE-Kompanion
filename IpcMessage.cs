@@ -1,5 +1,7 @@
 namespace PoEKompanion;
 
+using System.Collections.Generic;
+
 using MessagePack;
 
 [MessagePackObject]
@@ -8,10 +10,19 @@ using MessagePack;
 [Union(2, typeof(SetAlwaysOnTopMessage))]
 [Union(3, typeof(PoEHookedMessage))]
 [Union(4, typeof(PoEUnhookedMessage))]
+[Union(5, typeof(ChatCommandMessage))]
+[Union(6, typeof(KeyboardLayoutMapMessage))]
+[Union(7, typeof(BackgroundReadyMessage))]
+[Union(8, typeof(ModifierStateMessage))]
 public abstract record IpcMessage;
 
 [MessagePackObject]
 public sealed record ForceLogoutMessage : IpcMessage;
+
+[MessagePackObject]
+public sealed record ChatCommandMessage(
+    [property: Key(0)] string Command
+) : IpcMessage;
 
 [MessagePackObject]
 public sealed record NotificationMessage(
@@ -33,3 +44,22 @@ public sealed record PoEHookedMessage(
 
 [MessagePackObject]
 public sealed record PoEUnhookedMessage : IpcMessage;
+
+[MessagePackObject]
+public sealed record KeyboardLayoutMapMessage(
+    [property: Key(0)] Dictionary<char, KeycodMapping> LayoutMap
+) : IpcMessage;
+
+[MessagePackObject]
+public sealed record KeycodMapping(
+    [property: Key(0)] int Keycode,
+    [property: Key(1)] bool Shift
+);
+
+[MessagePackObject]
+public sealed record BackgroundReadyMessage : IpcMessage;
+
+[MessagePackObject]
+public sealed record ModifierStateMessage(
+    [property: Key(0)] bool AllModifiersReleased
+) : IpcMessage;
