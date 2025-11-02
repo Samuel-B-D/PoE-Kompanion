@@ -51,7 +51,7 @@ public static class KeyboardLayoutHelper
             {
                 if (string.IsNullOrWhiteSpace(line)) continue;
 
-                var parts = line.Split(new[] { ' ', '=' }, StringSplitOptions.RemoveEmptyEntries);
+                var parts = line.Split([' ', '='], StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length < 3 || parts[0] != "keycode") continue;
 
                 if (!int.TryParse(parts[1], out var x11Keycode)) continue;
