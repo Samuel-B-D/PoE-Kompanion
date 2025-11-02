@@ -25,6 +25,10 @@ public static class KeyboardLayoutHelper
 
         try
         {
+            Console.WriteLine("Building keyboard layout map...");
+            Console.WriteLine($"DISPLAY environment variable: {Environment.GetEnvironmentVariable("DISPLAY")}");
+            Console.WriteLine($"Running as AppImage: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPIMAGE"))}");
+
             var proc = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -42,9 +46,24 @@ public static class KeyboardLayoutHelper
             var error = proc.StandardError.ReadToEnd();
             proc.WaitForExit();
 
+            Console.WriteLine($"xmodmap exit code: {proc.ExitCode}");
+            Console.WriteLine($"xmodmap output length: {output.Length} characters");
+
             if (!string.IsNullOrWhiteSpace(error))
             {
-                Console.WriteLine($"xmodmap error: {error}");
+                Console.WriteLine($"xmodmap stderr: {error}");
+            }
+
+            if (proc.ExitCode != 0)
+            {
+                Console.WriteLine($"xmodmap failed with exit code {proc.ExitCode}");
+                return layoutMap;
+            }
+
+            if (string.IsNullOrWhiteSpace(output))
+            {
+                Console.WriteLine("xmodmap returned no output!");
+                return layoutMap;
             }
 
             foreach (var line in output.Split('\n'))

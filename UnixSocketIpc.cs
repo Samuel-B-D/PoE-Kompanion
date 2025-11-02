@@ -84,17 +84,25 @@ public sealed class UnixSocketIpc : IDisposable
         if (this.remoteEndPoint is null) return;
 
         var buffer = MessagePackSerializer.Serialize(message, cancellationToken: cancellationToken);
+        Console.WriteLine($"Sending IPC message: {message.GetType().Name} ({buffer.Length} bytes)");
+
+        if (buffer.Length > 8192)
+        {
+            Console.WriteLine($"WARNING: Message size {buffer.Length} bytes exceeds typical datagram limits!");
+        }
+
         await this.socket.SendToAsync(buffer, SocketFlags.None, this.remoteEndPoint, cancellationToken);
     }
 
     public async Task<IpcMessage?> ReceiveAsync(CancellationToken cancellationToken = default)
     {
-        var buffer = new byte[4096];
+        var buffer = new byte[16384];
         var received = await this.socket.ReceiveAsync(buffer, SocketFlags.None, cancellationToken);
 
-        return received == 0 
-            ? null 
-            : MessagePackSerializer.Deserialize<IpcMessage>(buffer.AsMemory(0, received), cancellationToken: cancellationToken);
+        if (received == 0) return null;
+
+        Console.WriteLine($"Received {received} bytes via IPC");
+        return MessagePackSerializer.Deserialize<IpcMessage>(buffer.AsMemory(0, received), cancellationToken: cancellationToken);
     }
 
     public void Dispose()

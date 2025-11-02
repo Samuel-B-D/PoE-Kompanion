@@ -2,6 +2,7 @@ namespace PoEKompanion;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -135,10 +136,18 @@ internal sealed class VirtualKeyboard : IDisposable
         Console.WriteLine("Virtual keyboard created successfully");
     }
 
-    public void SetLayoutMap(Dictionary<char, KeycodMapping> map)
+    public void SetLayoutMap(CharKeyMapping[] layoutArray)
     {
-        this.layoutMap = map;
+        this.layoutMap = layoutArray.ToDictionary(
+            m => m.Character,
+            m => new KeycodMapping(m.Keycode, m.Shift)
+        );
         Console.WriteLine($"Received layout map with {this.layoutMap.Count} character mappings");
+
+        if (this.layoutMap.Count == 0)
+        {
+            Console.WriteLine("WARNING: Received empty layout map! Character input will not work.");
+        }
     }
 
     public async Task SendChatCommandAsync(string command)
@@ -245,9 +254,16 @@ internal sealed class VirtualKeyboard : IDisposable
 
     private Dictionary<char, KeycodMapping> GetLayoutMap()
     {
-        if (this.layoutMap != null) return this.layoutMap;
+        if (this.layoutMap != null)
+        {
+            if (this.layoutMap.Count == 0)
+            {
+                Console.WriteLine("ERROR: Layout map is empty! This likely means xmodmap failed in the foreground process.");
+            }
+            return this.layoutMap;
+        }
 
-        Console.WriteLine("Warning: Layout map not yet received from foreground process, using empty map");
+        Console.WriteLine("ERROR: Layout map not yet received from foreground process");
         return new Dictionary<char, KeycodMapping>();
     }
 

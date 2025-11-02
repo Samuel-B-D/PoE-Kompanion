@@ -3,6 +3,7 @@ namespace PoEKompanion;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Avalonia;
@@ -134,12 +135,31 @@ public class App : Application
 
     private async Task SendKeyboardLayoutMapAsync()
     {
-        if (this.ipc is null) return;
+        try
+        {
+            if (this.ipc is null)
+            {
+                Console.WriteLine("ERROR: IPC is null, cannot send layout map");
+                return;
+            }
 
-        var layoutMap = KeyboardLayoutHelper.BuildLayoutMap();
-        Console.WriteLine($"Sending layout map with {layoutMap.Count} entries to background process");
-        await this.ipc.SendAsync(new KeyboardLayoutMapMessage(layoutMap));
-        Console.WriteLine("Layout map sent successfully");
+            var layoutMap = KeyboardLayoutHelper.BuildLayoutMap();
+            Console.WriteLine($"Sending layout map with {layoutMap.Count} entries to background process");
+
+            var layoutArray = layoutMap.Select(kvp => new CharKeyMapping(kvp.Key, kvp.Value.Keycode, kvp.Value.Shift)).ToArray();
+            Console.WriteLine($"Converted to array with {layoutArray.Length} entries");
+
+            var message = new KeyboardLayoutMapMessage(layoutArray);
+            Console.WriteLine($"Created KeyboardLayoutMapMessage, about to send...");
+
+            await this.ipc.SendAsync(message);
+            Console.WriteLine("Layout map sent successfully");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERROR sending layout map: {ex.GetType().Name}: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        }
     }
     
     private void StartMainHook()

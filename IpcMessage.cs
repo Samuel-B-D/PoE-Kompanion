@@ -47,8 +47,15 @@ public sealed record PoEUnhookedMessage : IpcMessage;
 
 [MessagePackObject]
 public sealed record KeyboardLayoutMapMessage(
-    [property: Key(0)] Dictionary<char, KeycodMapping> LayoutMap
+    [property: Key(0)] CharKeyMapping[] LayoutMap
 ) : IpcMessage;
+
+[MessagePackObject]
+public sealed record CharKeyMapping(
+    [property: Key(0)] char Character,
+    [property: Key(1)] int Keycode,
+    [property: Key(2)] bool Shift
+);
 
 [MessagePackObject]
 public sealed record KeycodMapping(
