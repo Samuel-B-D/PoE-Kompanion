@@ -5,6 +5,16 @@ All notable changes to PoE Kompanion will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2025-11-16
+
+### Fixed
+- Fixed crash when opening and closing the settings window multiple times
+- Tentative fix for crash on startup for some Arch Linux users (bus error in AppImage)
+
+### Technical
+- Improved memory alignment in native interop code for better compatibility
+- Hook now stays alive during settings window operations instead of being disposed
+
 ## [0.2.0] - 2025-11-02
 
 ### Added
@@ -44,5 +54,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unix domain socket IPC for process communication
 - Background process runs with CAP_NET_ADMIN capability for network operations
 
+[0.2.1]: https://github.com/Samuel-B-D/PoE-Kompanion/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/Samuel-B-D/PoE-Kompanion/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Samuel-B-D/PoE-Kompanion/releases/tag/v0.1.0

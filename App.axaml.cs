@@ -30,6 +30,8 @@ public class App : Application
 
     private ConfigurationWindow? configWindow;
 
+    private bool isConfigWindowOpen;
+
     private int? poeProcessId;
 
     private bool isCtrlPressed;
@@ -178,6 +180,8 @@ public class App : Application
                 return;
             }
 
+            if (this.isConfigWindowOpen) return;
+
             if (this.config?.LogoutHotkey?.Matches(keyCode, this.isCtrlPressed, this.isShiftPressed, this.isAltPressed) == true)
             {
                 // Fire immediately for logout (doesn't send text)
@@ -223,6 +227,8 @@ public class App : Application
             if (IsModifierKey(keyCode))
             {
                 this.UpdateModifierState(keyCode, false);
+
+                if (this.isConfigWindowOpen) return;
 
                 // Check if all modifiers are now released and we have a pending hotkey
                 if (this.pendingHotkeyCombo is not null &&
@@ -418,12 +424,13 @@ public class App : Application
                 return;
             }
 
+            this.isConfigWindowOpen = true;
             this.configWindow = new ConfigurationWindow();
             this.configWindow.Closed += async (_, _) =>
             {
                 this.configWindow = null;
+                this.isConfigWindowOpen = false;
                 this.config = await ConfigurationManager.LoadAsync();
-                this.StartMainHook();
             };
             this.configWindow.Show();
         });

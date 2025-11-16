@@ -75,8 +75,6 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
 
         this.Opened += (_, _) =>
         {
-            App.Instance?.StopMainHook();
-
             this.Measure(Size.Infinity);
             this.PositionOverPoE();
 

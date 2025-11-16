@@ -48,7 +48,7 @@ internal sealed class VirtualKeyboard : IDisposable
         public int Value;
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     private struct UinputSetup
     {
         public UinputId Id;
@@ -57,7 +57,7 @@ internal sealed class VirtualKeyboard : IDisposable
         public uint FfEffectsMax;
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential)]
     private struct UinputId
     {
         public ushort BusType;
@@ -187,7 +187,7 @@ internal sealed class VirtualKeyboard : IDisposable
         }
     }
 
-    private void SendKey(int keyCode, bool press)
+    private unsafe void SendKey(int keyCode, bool press)
     {
         var evt = new InputEvent
         {
@@ -198,11 +198,12 @@ internal sealed class VirtualKeyboard : IDisposable
             Value = press ? 1 : 0
         };
 
-        var evtBytes = new byte[Marshal.SizeOf<InputEvent>()];
-        var handle = GCHandle.Alloc(evtBytes, GCHandleType.Pinned);
-        Marshal.StructureToPtr(evt, handle.AddrOfPinnedObject(), false);
+        var evtSize = sizeof(InputEvent);
+        var evtBuffer = stackalloc byte[evtSize];
+        Marshal.StructureToPtr(evt, (IntPtr)evtBuffer, false);
+
+        var evtBytes = new Span<byte>(evtBuffer, evtSize).ToArray();
         var ret = write(this.virtualKeyboardFd, evtBytes, evtBytes.Length);
-        handle.Free();
 
         if (ret < 0)
         {
@@ -218,11 +219,11 @@ internal sealed class VirtualKeyboard : IDisposable
             Value = 0
         };
 
-        var synBytes = new byte[Marshal.SizeOf<InputEvent>()];
-        handle = GCHandle.Alloc(synBytes, GCHandleType.Pinned);
-        Marshal.StructureToPtr(synEvt, handle.AddrOfPinnedObject(), false);
+        var synBuffer = stackalloc byte[evtSize];
+        Marshal.StructureToPtr(synEvt, (IntPtr)synBuffer, false);
+
+        var synBytes = new Span<byte>(synBuffer, evtSize).ToArray();
         write(this.virtualKeyboardFd, synBytes, synBytes.Length);
-        handle.Free();
     }
 
     private void SendChar(char c)
