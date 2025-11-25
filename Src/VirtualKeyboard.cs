@@ -48,12 +48,11 @@ internal sealed class VirtualKeyboard : IDisposable
         public int Value;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    private struct UinputSetup
+    [StructLayout(LayoutKind.Sequential)]
+    private unsafe struct UinputSetup
     {
         public UinputId Id;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = UINPUT_MAX_NAME_SIZE)]
-        public byte[] Name;
+        public fixed byte Name[UINPUT_MAX_NAME_SIZE];
         public uint FfEffectsMax;
     }
 
@@ -79,6 +78,7 @@ internal sealed class VirtualKeyboard : IDisposable
         const int O_NONBLOCK = 0x800;
 
         this.virtualKeyboardFd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
+
         if (this.virtualKeyboardFd < 0)
         {
             var errno = Marshal.GetLastWin32Error();
@@ -86,8 +86,6 @@ internal sealed class VirtualKeyboard : IDisposable
             Console.WriteLine($"Failed to open /dev/uinput: {errMsg} (errno={errno})");
             return;
         }
-
-        Console.WriteLine("Successfully opened /dev/uinput");
 
         ioctl(this.virtualKeyboardFd, UI_SET_EVBIT, EV_KEY);
         ioctl(this.virtualKeyboardFd, UI_SET_EVBIT, EV_SYN);
@@ -97,24 +95,26 @@ internal sealed class VirtualKeyboard : IDisposable
             ioctl(this.virtualKeyboardFd, UI_SET_KEYBIT, i);
         }
 
-        var nameBytes = new byte[UINPUT_MAX_NAME_SIZE];
         var nameStr = "PoE Kompanion Virtual Keyboard";
-        System.Text.Encoding.ASCII.GetBytes(nameStr, 0, Math.Min(nameStr.Length, UINPUT_MAX_NAME_SIZE - 1), nameBytes, 0);
+        var nameBytes = System.Text.Encoding.ASCII.GetBytes(nameStr);
 
-        var setup = new UinputSetup
+        UinputSetup setup;
+        setup.Id.BusType = 0x03;
+        setup.Id.Vendor = 0x1234;
+        setup.Id.Product = 0x5678;
+        setup.Id.Version = 1;
+        setup.FfEffectsMax = 0;
+
+        unsafe
         {
-            Id = new UinputId
+            for (var i = 0; i < UINPUT_MAX_NAME_SIZE; i++)
             {
-                BusType = 0x03,
-                Vendor = 0x1234,
-                Product = 0x5678,
-                Version = 1
-            },
-            Name = nameBytes,
-            FfEffectsMax = 0
-        };
+                setup.Name[i] = i < nameBytes.Length ? nameBytes[i] : (byte)0;
+            }
+        }
 
         var ret = ioctl(this.virtualKeyboardFd, UI_DEV_SETUP, ref setup);
+
         if (ret < 0)
         {
             var errno = Marshal.GetLastWin32Error();
@@ -123,6 +123,7 @@ internal sealed class VirtualKeyboard : IDisposable
         }
 
         ret = ioctl(this.virtualKeyboardFd, UI_DEV_CREATE, 0);
+
         if (ret < 0)
         {
             var errno = Marshal.GetLastWin32Error();
@@ -160,8 +161,6 @@ internal sealed class VirtualKeyboard : IDisposable
 
         try
         {
-            Console.WriteLine($"Attempting to send chat command: {command}");
-
             this.SendKey(KEY_ENTER, true);
             this.SendKey(KEY_ENTER, false);
 
@@ -177,17 +176,14 @@ internal sealed class VirtualKeyboard : IDisposable
 
             this.SendKey(KEY_ENTER, true);
             this.SendKey(KEY_ENTER, false);
-
-            Console.WriteLine($"Successfully sent chat command: {command}");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error sending chat command: {ex.Message}");
-            Console.WriteLine($"Stack trace: {ex.StackTrace}");
         }
     }
 
-    private unsafe void SendKey(int keyCode, bool press)
+    private void SendKey(int keyCode, bool press)
     {
         var evt = new InputEvent
         {
@@ -198,11 +194,15 @@ internal sealed class VirtualKeyboard : IDisposable
             Value = press ? 1 : 0
         };
 
-        var evtSize = sizeof(InputEvent);
-        var evtBuffer = stackalloc byte[evtSize];
-        Marshal.StructureToPtr(evt, (IntPtr)evtBuffer, false);
+        var evtSize = Marshal.SizeOf<InputEvent>();
+        var buffer = new InputEvent[1];
+        buffer[0] = evt;
 
-        var evtBytes = new Span<byte>(evtBuffer, evtSize).ToArray();
+        var handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+        var evtBytes = new byte[evtSize];
+        Marshal.Copy(handle.AddrOfPinnedObject(), evtBytes, 0, evtSize);
+        handle.Free();
+
         var ret = write(this.virtualKeyboardFd, evtBytes, evtBytes.Length);
 
         if (ret < 0)
@@ -219,10 +219,12 @@ internal sealed class VirtualKeyboard : IDisposable
             Value = 0
         };
 
-        var synBuffer = stackalloc byte[evtSize];
-        Marshal.StructureToPtr(synEvt, (IntPtr)synBuffer, false);
+        buffer[0] = synEvt;
+        handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+        var synBytes = new byte[evtSize];
+        Marshal.Copy(handle.AddrOfPinnedObject(), synBytes, 0, evtSize);
+        handle.Free();
 
-        var synBytes = new Span<byte>(synBuffer, evtSize).ToArray();
         write(this.virtualKeyboardFd, synBytes, synBytes.Length);
     }
 
@@ -275,7 +277,6 @@ internal sealed class VirtualKeyboard : IDisposable
             ioctl(this.virtualKeyboardFd, UI_DEV_DESTROY, 0);
             close(this.virtualKeyboardFd);
             this.virtualKeyboardFd = -1;
-            Console.WriteLine("Virtual keyboard destroyed");
         }
     }
 }

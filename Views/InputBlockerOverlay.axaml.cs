@@ -3,15 +3,13 @@ namespace PoEKompanion.Views;
 using System;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 
 public partial class InputBlockerOverlay : Window
 {
     private readonly Window? parentWindow;
 
-    public InputBlockerOverlay(Window? parentWindow = null)
+    public InputBlockerOverlay()
     {
-        this.parentWindow = parentWindow;
         this.InitializeComponent();
 
         this.Opened += (_, _) =>
@@ -24,9 +22,9 @@ public partial class InputBlockerOverlay : Window
         };
     }
 
-    private void InitializeComponent()
+    public InputBlockerOverlay(Window parentWindow) : this()
     {
-        AvaloniaXamlLoader.Load(this);
+        this.parentWindow = parentWindow;
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)

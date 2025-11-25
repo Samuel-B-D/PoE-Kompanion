@@ -22,7 +22,7 @@ public class App : Application
 
     private Process? bgProcess;
 
-    private EventLoopGlobalHook? hook;
+    private IGlobalHook? hook;
 
     private UnixSocketIpc? ipc;
 
@@ -31,6 +31,8 @@ public class App : Application
     private ConfigurationWindow? configWindow;
 
     private bool isConfigWindowOpen;
+
+    private volatile bool isDisposingHook;
 
     private int? poeProcessId;
 
@@ -119,17 +121,10 @@ public class App : Application
             }
             else if (message is SetAlwaysOnTopMessage setAlwaysOnTop)
             {
-                _ = Task.Run(() =>
-                {
-                    if (WindowManager.TrySetAlwaysOnTop(setAlwaysOnTop.ProcessId))
-                    {
-                        Console.WriteLine("Set PoE window to always-on-top");
-                    }
-                });
+                _ = Task.Run(() => WindowManager.TrySetAlwaysOnTop(setAlwaysOnTop.ProcessId));
             }
             else if (message is BackgroundReadyMessage)
             {
-                Console.WriteLine("Received BackgroundReadyMessage, sending layout map");
                 await this.SendKeyboardLayoutMapAsync();
             }
         }
@@ -139,23 +134,13 @@ public class App : Application
     {
         try
         {
-            if (this.ipc is null)
-            {
-                Console.WriteLine("ERROR: IPC is null, cannot send layout map");
-                return;
-            }
+            if (this.ipc is null) return;
 
             var layoutMap = KeyboardLayoutHelper.BuildLayoutMap();
-            Console.WriteLine($"Sending layout map with {layoutMap.Count} entries to background process");
-
             var layoutArray = layoutMap.Select(kvp => new CharKeyMapping(kvp.Key, kvp.Value.Keycode, kvp.Value.Shift)).ToArray();
-            Console.WriteLine($"Converted to array with {layoutArray.Length} entries");
-
             var message = new KeyboardLayoutMapMessage(layoutArray);
-            Console.WriteLine($"Created KeyboardLayoutMapMessage, about to send...");
 
             await this.ipc.SendAsync(message);
-            Console.WriteLine("Layout map sent successfully");
         }
         catch (Exception ex)
         {
@@ -168,10 +153,13 @@ public class App : Application
     {
         if (this.hook is not null) return;
 
-        this.hook = new EventLoopGlobalHook();
+        this.isDisposingHook = false;
+        this.hook = new SimpleGlobalHook();
 
         this.hook.KeyPressed += async (_, args) =>
         {
+            if (this.isDisposingHook) return;
+
             var keyCode = args.Data.KeyCode;
 
             if (IsModifierKey(keyCode))
@@ -223,7 +211,10 @@ public class App : Application
 
         this.hook.KeyReleased += async (_, args) =>
         {
+            if (this.isDisposingHook) return;
+
             var keyCode = args.Data.KeyCode;
+
             if (IsModifierKey(keyCode))
             {
                 this.UpdateModifierState(keyCode, false);
@@ -252,13 +243,39 @@ public class App : Application
             }
         };
 
-        _ = Task.Run(() => this.hook.RunAsync());
+        _ = Task.Run(() =>
+        {
+            try
+            {
+                this.hook.Run();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Hook crashed: {ex.Message}");
+            }
+        });
     }
 
-    public void StopMainHook()
+    public async Task StopMainHookAsync()
     {
-        this.hook?.Dispose();
+        if (this.hook is null) return;
+
+        this.isDisposingHook = true;
+
+        // Give any in-flight events a moment to check the flag
+        await Task.Delay(50);
+
+        var hookToDispose = this.hook;
         this.hook = null;
+
+        try
+        {
+            await Task.Run(() => hookToDispose.Dispose());
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error disposing hook: {ex.Message}");
+        }
     }
 
     private static bool IsModifierKey(SharpHook.Data.KeyCode keyCode) =>
@@ -294,6 +311,7 @@ public class App : Application
         {
             var display = Environment.GetEnvironmentVariable("DISPLAY") ?? ":0";
             var xauthority = Environment.GetEnvironmentVariable("XAUTHORITY") ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".Xauthority");
+            var disableVirtualKeyboard = Environment.GetEnvironmentVariable("DISABLE_VIRTUAL_KEYBOARD") ?? "0";
 
             this.bgProcess = new Process
             {
@@ -305,8 +323,9 @@ public class App : Application
                         {"APPIMAGELAUNCHER_DISABLE", "1"},
                         {"DISPLAY", display},
                         {"XAUTHORITY", xauthority},
+                        {"DISABLE_VIRTUAL_KEYBOARD", disableVirtualKeyboard},
                     },
-                    Arguments = $"-n --preserve-env=APPIMAGELAUNCHER_DISABLE,DISPLAY,XAUTHORITY {path} --bg {currentPid}",
+                    Arguments = $"-n --preserve-env=APPIMAGELAUNCHER_DISABLE,DISPLAY,XAUTHORITY,DISABLE_VIRTUAL_KEYBOARD {path} --bg {currentPid}",
                     UseShellExecute = false,
                     CreateNoWindow = true,
                 },
@@ -431,6 +450,7 @@ public class App : Application
                 this.configWindow = null;
                 this.isConfigWindowOpen = false;
                 this.config = await ConfigurationManager.LoadAsync();
+                this.StartMainHook();
             };
             this.configWindow.Show();
         });

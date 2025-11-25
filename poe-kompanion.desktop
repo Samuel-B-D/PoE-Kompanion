@@ -1,8 +1,8 @@
 [Desktop Entry]
+Type=Application
 Name=PoE Kompanion
-Comment=Path of Exile companion utility
+Comment=Path of Exile companion utility for instant logout and macros
 Exec=PoEKompanion
 Icon=poe-kompanion
-Type=Application
 Categories=Game;Utility;
 Terminal=false

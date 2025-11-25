@@ -58,9 +58,13 @@ internal sealed class PoETracker
             });
         }
 
-        this.virtualKeyboard.Initialize();
+        var disableVirtualKeyboard = Environment.GetEnvironmentVariable("DISABLE_VIRTUAL_KEYBOARD");
+        if (disableVirtualKeyboard != "1")
+        {
+            this.virtualKeyboard.Initialize();
+        }
+
         await this.ipc.SendAsync(new BackgroundReadyMessage());
-        Console.WriteLine("Background process ready, notified foreground");
 
         while (true)
         {

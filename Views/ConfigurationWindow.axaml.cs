@@ -73,8 +73,10 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
 
         _ = this.LoadConfiguration();
 
-        this.Opened += (_, _) =>
+        this.Opened += async (_, _) =>
         {
+            await (App.Instance?.StopMainHookAsync() ?? Task.CompletedTask);
+
             this.Measure(Size.Infinity);
             this.PositionOverPoE();
 
@@ -158,11 +160,6 @@ public partial class ConfigurationWindow : Window, INotifyPropertyChanged
             var currentPid = Environment.ProcessId;
             WindowManager.TryBringToFront(currentPid);
         });
-    }
-
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
     }
 
     private async Task LoadConfiguration()

@@ -8,7 +8,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using SharpHook;
 using SharpHook.Data;
@@ -75,11 +74,6 @@ public partial class HotkeyPickerButton : UserControl, INotifyPropertyChanged
     public HotkeyPickerButton()
     {
         this.InitializeComponent();
-    }
-
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
         this.pickerButton = this.FindControl<Button>("PickerButton") ?? throw new InvalidOperationException("PickerButton not found");
     }
 

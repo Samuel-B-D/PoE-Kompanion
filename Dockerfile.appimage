@@ -1,0 +1,87 @@
+# Build AppImage in Debian 11 (bullseye) for maximum compatibility
+# Debian 11 has glibc 2.31, compatible with most Linux distributions
+# Using slim variant for minimal size
+FROM debian:bullseye-slim AS builder
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    wget \
+    ca-certificates \
+    file \
+    build-essential \
+    clang \
+    zlib1g-dev \
+    fuse \
+    libfuse2 \
+    desktop-file-utils \
+    libx11-dev \
+    libxtst-dev \
+    libxinerama-dev \
+    libxkbcommon-dev \
+    libxt-dev \
+    libfontconfig1-dev \
+    libfreetype6-dev \
+    libpng-dev \
+    libbz2-dev \
+    libbrotli-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install .NET 9.0 SDK
+RUN wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh && \
+    chmod +x dotnet-install.sh && \
+    ./dotnet-install.sh --channel 9.0 --install-dir /usr/share/dotnet && \
+    ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet && \
+    rm dotnet-install.sh
+
+# Download and extract linuxdeploy
+RUN wget -q "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage" && \
+    chmod +x linuxdeploy-x86_64.AppImage && \
+    ./linuxdeploy-x86_64.AppImage --appimage-extract >/dev/null 2>&1 && \
+    mv squashfs-root /usr/local/linuxdeploy && \
+    rm linuxdeploy-x86_64.AppImage
+
+# Set working directory
+WORKDIR /build
+
+# Copy project files (exclude build artifacts and docker-related files)
+COPY PoEKompanion.csproj .
+COPY linker.rd.xml* ./
+COPY Assets/ Assets/
+COPY Controls/ Controls/
+COPY ControlThemes/ ControlThemes/
+COPY Src/ Src/
+COPY Views/ Views/
+COPY Styles/ Styles/
+COPY poe-kompanion.png .
+COPY poe-kompanion.desktop .
+
+# Set .NET environment variables
+ENV DOTNET_CLI_HOME=/tmp \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+    DOTNET_NOLOGO=1 \
+    HOME=/tmp
+
+# Build the application
+RUN dotnet publish -c Release -r linux-x64 --self-contained
+
+# Extract version from csproj
+RUN grep -oP '<AppVersion>\K[^<]+' PoEKompanion.csproj > /tmp/version
+
+# Build linuxdeploy arguments and create AppImage
+RUN LINUXDEPLOY_ARGS="--appdir AppDir" && \
+    LINUXDEPLOY_ARGS="$LINUXDEPLOY_ARGS --executable bin/Release/net9.0/linux-x64/publish/PoEKompanion" && \
+    LINUXDEPLOY_ARGS="$LINUXDEPLOY_ARGS --desktop-file poe-kompanion.desktop" && \
+    LINUXDEPLOY_ARGS="$LINUXDEPLOY_ARGS --icon-file poe-kompanion.png" && \
+    for lib in bin/Release/net9.0/linux-x64/publish/*.so; do \
+        [ -f "$lib" ] && LINUXDEPLOY_ARGS="$LINUXDEPLOY_ARGS --library $lib"; \
+    done && \
+    LINUXDEPLOY_ARGS="$LINUXDEPLOY_ARGS --output appimage" && \
+    export OUTPUT_NAME="PoE_Kompanion-x86_64.AppImage" && \
+    export ARCH=x86_64 && \
+    /usr/local/linuxdeploy/AppRun $LINUXDEPLOY_ARGS && \
+    VERSION=$(cat /tmp/version) && \
+    mv PoE_Kompanion-x86_64.AppImage "PoE-Kompanion-${VERSION}-x86_64.AppImage"
+
+# Final stage - just copy the AppImage out
+FROM scratch AS export
+COPY --from=builder /build/PoE-Kompanion-*.AppImage /
