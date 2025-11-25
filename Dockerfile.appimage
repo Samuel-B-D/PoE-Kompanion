@@ -54,6 +54,7 @@ COPY Views/ Views/
 COPY Styles/ Styles/
 COPY poe-kompanion.png .
 COPY poe-kompanion.desktop .
+COPY dockerfile-inner-build.sh .
 
 # Set .NET environment variables
 ENV DOTNET_CLI_HOME=/tmp \
@@ -61,27 +62,9 @@ ENV DOTNET_CLI_HOME=/tmp \
     DOTNET_NOLOGO=1 \
     HOME=/tmp
 
-# Build the application
-RUN dotnet publish -c Release -r linux-x64 --self-contained
+# Run the build script
+RUN chmod +x dockerfile-inner-build.sh && ./dockerfile-inner-build.sh
 
-# Extract version from csproj
-RUN grep -oP '<AppVersion>\K[^<]+' PoEKompanion.csproj > /tmp/version
-
-# Build linuxdeploy arguments and create AppImage
-RUN LINUXDEPLOY_ARGS="--appdir AppDir" && \
-    LINUXDEPLOY_ARGS="$LINUXDEPLOY_ARGS --executable bin/Release/net9.0/linux-x64/publish/PoEKompanion" && \
-    LINUXDEPLOY_ARGS="$LINUXDEPLOY_ARGS --desktop-file poe-kompanion.desktop" && \
-    LINUXDEPLOY_ARGS="$LINUXDEPLOY_ARGS --icon-file poe-kompanion.png" && \
-    for lib in bin/Release/net9.0/linux-x64/publish/*.so; do \
-        [ -f "$lib" ] && LINUXDEPLOY_ARGS="$LINUXDEPLOY_ARGS --library $lib"; \
-    done && \
-    LINUXDEPLOY_ARGS="$LINUXDEPLOY_ARGS --output appimage" && \
-    export OUTPUT_NAME="PoE_Kompanion-x86_64.AppImage" && \
-    export ARCH=x86_64 && \
-    /usr/local/linuxdeploy/AppRun $LINUXDEPLOY_ARGS && \
-    VERSION=$(cat /tmp/version) && \
-    mv PoE_Kompanion-x86_64.AppImage "PoE-Kompanion-${VERSION}-x86_64.AppImage"
-
-# Final stage - just copy the AppImage out
+# Final stage - copy both AppImage and tar.gz to export
 FROM scratch AS export
-COPY --from=builder /build/PoE-Kompanion-*.AppImage /
+COPY --from=builder /output/ /

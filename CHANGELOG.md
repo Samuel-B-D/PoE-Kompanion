@@ -5,6 +5,19 @@ All notable changes to PoE Kompanion will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2025-11-24
+
+### Changed
+- AppImage now built in Debian 11 container for maximum compatibility across Linux distributions
+- Reduced glibc requirement from 2.38 to 2.29 for broader system support
+
+### Technical
+- Implemented Docker-based build system using Debian 11 (bullseye)
+- Integrated linuxdeploy for automatic dependency discovery and bundling
+- All required system libraries (X11, image processing, etc.) now bundled in AppImage
+- Build process fully isolated in Docker container for reproducible builds
+- AppImage now compatible with Ubuntu 20.04+, Debian 10+, and most modern Linux distributions
+
 ## [0.2.1] - 2025-11-16
 
 ### Fixed
@@ -54,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unix domain socket IPC for process communication
 - Background process runs with CAP_NET_ADMIN capability for network operations
 
+[0.2.2]: https://github.com/Samuel-B-D/PoE-Kompanion/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/Samuel-B-D/PoE-Kompanion/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/Samuel-B-D/PoE-Kompanion/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Samuel-B-D/PoE-Kompanion/releases/tag/v0.1.0
