@@ -43,15 +43,10 @@ RUN wget -q "https://github.com/linuxdeploy/linuxdeploy/releases/download/contin
 # Set working directory
 WORKDIR /build
 
-# Copy project files (exclude build artifacts and docker-related files)
-COPY PoEKompanion.csproj .
-COPY linker.rd.xml* ./
-COPY Assets/ Assets/
-COPY Controls/ Controls/
-COPY ControlThemes/ ControlThemes/
-COPY Src/ Src/
-COPY Views/ Views/
-COPY Styles/ Styles/
+# Copy project files from PoE-Kompanion subdirectory
+COPY PoE-Kompanion/ ./
+
+# Copy files from project root
 COPY poe-kompanion.png .
 COPY poe-kompanion.desktop .
 COPY dockerfile-inner-build.sh .

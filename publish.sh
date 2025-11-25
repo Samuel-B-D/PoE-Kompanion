@@ -4,7 +4,7 @@ set -e
 echo "Publishing PoE Kompanion..."
 
 # Extract version from csproj
-VERSION=$(grep -oP '<AppVersion>\K[^<]+' PoEKompanion.csproj)
+VERSION=$(grep -oP '<AppVersion>\K[^<]+' PoE-Kompanion/PoEKompanion.csproj)
 echo "Version: $VERSION"
 
 # Create publish directory

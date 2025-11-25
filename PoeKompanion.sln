@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{C8D83D58-95A0-4710-9F70-7BD4F8C72A35}") = "PoEKompanion", "PoEKompanion.csproj", "{C8CF5DF7-4D1E-450B-87BB-EE177419A914}"
+Project("{C8D83D58-95A0-4710-9F70-7BD4F8C72A35}") = "PoEKompanion", "PoE-Kompanion\PoEKompanion.csproj", "{C8CF5DF7-4D1E-450B-87BB-EE177419A914}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
